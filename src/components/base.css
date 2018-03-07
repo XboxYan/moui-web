@@ -1,0 +1,38 @@
+.view{position: absolute;user-select: none;}
+.view.filter{ pointer-events: none;}
+.view.filter>.view{ pointer-events: all;}
+.view::before,.view::after{ white-space: pre; position: absolute; font-size: 12px; line-height: 16px; color: #fff; background: rgba(0,0,0,.8); border-radius: 3px; padding: 3px 5px;}
+.view.drag::before,.view[data-editable=true]:focus::before{ top: -5px; right: -10px; transform: translateX(100%);  content:"x : "attr(data-pos-x)" px\Ay : "attr(data-pos-y)" px"; }
+.view[data-editable=true]:focus::after{ left: -5px; bottom: -10px; transform: translateY(100%); content:"w : "attr(data-res-w)" px\Ah : "attr(data-res-h)" px"; }
+.view.hover{ outline:1px dashed royalblue; }
+.view.in{ background: rgb(246, 253, 150); outline:1px dashed royalblue;}
+.view:focus{ outline:1px solid royalblue; z-index: 10; }
+.view:hover{ z-index: 10;}
+.view.drag{box-shadow: 0 0 20px royalblue; z-index: 30;}
+.a-resize{ visibility: hidden; }
+.a-resize i{ position: absolute; box-sizing: border-box;}
+.a-d{ background: #fff; width: 10px; height: 10px; border: 1px solid royalblue; }
+.a-l::after{ content: ''; position: absolute; box-sizing: border-box; left: 50%; top: 50%; transform: translate(-50%,-50%); background: #fff; width: 10px; height: 10px; border: 1px solid royalblue;}
+.a-top{ top: -5px; left: 5px; right: 5px; height: 10px; cursor: n-resize;}
+.a-right{ top: 5px; bottom: 5px; right: -5px; width: 10px; cursor: e-resize;}
+.a-bottom{ bottom: -5px; left: 5px; right: 5px; height: 10px; cursor: s-resize;}
+.a-left{ top: 5px; bottom: 5px; left: -5px; width: 10px; cursor: w-resize;}
+.a-topLeft{ left: -5px; top: -5px; cursor: se-resize;}
+.a-topRight{ right: -5px; top: -5px; cursor: sw-resize;}
+.a-bottomLeft{ left: -5px; bottom: -5px; cursor: sw-resize;}
+.a-bottomRight{ right: -5px; bottom: -5px; cursor: se-resize;}
+.view[data-editable=true]:focus>.a-resize{ visibility: visible; }
+.view>.editview{ position: absolute; z-index: 20; cursor: pointer; text-align: center; font-size: 14px; line-height: 20px; color: #fff; left: 50%; top: -10px; transform: translate(-50%,-100%); width: 20px; height: 20px; background: rgba(0,0,0,.8); border-radius: 3px; visibility: hidden;}
+.view[data-editable=false]>.editview::before{ content: 'L'; }
+.view[data-editable=true]:focus>.editview::before{ content: 'U'; }
+.view:focus>.editview{visibility: visible;}
+.view[data-editable=false].hover>.editview{visibility: visible;}
+.view img{  width: 100%; height: 100%; user-select: none;}
+.view.nodrop{ cursor: no-drop;}
+.els{ width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+[data-tips] {overflow: visible;}
+[data-tips]::before {content: attr(data-tips);left: 100%; top:-100%;border-radius: 3px;margin-bottom: 12px;padding: 6px 10px;line-height: 18px;background-color: #373c42;text-align: left;color: #fff;font-size: 12px;font-style: normal;font-family: 'microsoft yahei';white-space: nowrap;}
+[data-tips]::after {content: '';left: 50%;width: 0;height: 0;overflow: hidden;border: 6px solid transparent;border-top-color: #373c42;}
+[data-tips]:hover:before,[data-tips]:hover:after {visibility: visible;}
+[data-tips]::before,[data-tips]::after { position: absolute;transform: translate(20px,20px);opacity: 0;transition: .15s .15s;}
+[data-tips]:hover::before,[data-tips]:hover::after {transform: translate(10px,10px);opacity: 1;}
