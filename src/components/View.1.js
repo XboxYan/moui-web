@@ -135,19 +135,9 @@ class View extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            editable: props.editable,
-            w:props.w,
-            h:props.h,
-            x:props.x,
-            y:props.y,
-            _x:props.x,
-            _y:props.y,
-            isDrag:false,
-            isHover:false,
-            isNodrop:false
+            editable: props.editable
         };
     }
-
 
     //初始位置
     start = {
@@ -158,11 +148,11 @@ class View extends PureComponent {
     //放置元素
     overObj = null;
 
-
-
     mouseout = (ev) => {
         ev.stopPropagation();
-        this.setState({isHover:false});
+        if (window.$_HOVER) {
+            util.removeClass(window.$_HOVER, "hover");
+        }
     }
 
     onMenu = (ev) => {
@@ -185,49 +175,51 @@ class View extends PureComponent {
         return index;
     }
 
-    dragStart = (ev) => {
-        if(ev.target.className==="editview"){
-            return false;
-        }
+    dargStart = (ev) => {
+        ev.stopPropagation();
         const { clientX, clientY } = ev;
+        window.$POSITON = { clientX, clientY };
         let targets = document.elementsFromPoint(clientX, clientY);
         let index = this.findDragTarget(targets);
         if (index < 0) {
             return false;
         }
         let target = targets[index];
-        const { left, top, width, height } = target.getBoundingClientRect();
         if (this.state.editable) {
-            this.setState({w:width,h:height})
-            ev.stopPropagation();
-        }else{
-            return false;
+            const { width, height } = target.getBoundingClientRect();
+            target.dataset.resW = parseInt(width,10);
+            target.dataset.resH = parseInt(height,10);
         }
-        window.$POSITON = { clientX, clientY };
+        const { left, top } = target.getBoundingClientRect();
         const offsetParent = target.offsetParent;
         const offsetParentBound = offsetParent.getBoundingClientRect();
         let _left = offsetParentBound.left + offsetParent.scrollLeft;
         let _top = offsetParentBound.top + offsetParent.scrollTop;
-        let x = left - _left;
-        let y = top - _top;
-        this.start = {x,y};
+        target.dataset.posX = left - _left;
+        target.dataset.posY = top - _top;
+        this.start = {
+            x: left - _left,
+            y: top - _top,
+        }
         const _X = clientX - left
         const _Y = clientY - top;
-        document.onmousemove = (event) => this.drag( event, { _X, _Y, _left, _top });
-        document.onmouseup = this.dragEnd;
+        document.onmousemove = (event) => this.darg(target, event, { _X, _Y, _left, _top });
+        document.onmouseup = this.dargEnd;
         return false;
     }
 
-    drag = ( event, { _X, _Y, _left, _top }) => {
+    darg = (target, event, { _X, _Y, _left, _top }) => {
         event.stopPropagation();
         const { clientX, clientY } = event;
         if (window.$POSITON.clientX === clientX && window.$POSITON.clientY === clientY) {
             return false;
         }
-        this.setState({isDrag:true});
-        //util.addClass(target, 'drag');
+        util.addClass(target, 'drag');
         let obj = document.elementsFromPoint(clientX, clientY);
         let overObj = obj[this.findDragTarget(obj) + 1];
+        
+        const { offsetWidth, offsetHeight } = target;
+        
         if (overObj) {
             util.addClass(overObj, 'over');
             if (this.overObj && this.overObj !== overObj) {
@@ -237,16 +229,14 @@ class View extends PureComponent {
         }else{
             return false;
         }
-        const { w, h } = this.state;
         const { left, top, width, height } = overObj.getBoundingClientRect();
-        const centX = width*.5 - w*.5;
-        const centY = height*.5 - h*.5;
+        const centX = parseInt(width*.5 - offsetWidth*.5,10);
+        const centY = parseInt(height*.5 - offsetHeight*.5,10);
         //真实坐标
         let _x = clientX - left - _X;
         let _y = clientY - top - _Y;
         if(overObj.dataset.allowdrop==='true'){
-            this.setState({isNodrop:false});
-            //util.removeClass(target,'nodrop');
+            util.removeClass(target,'nodrop');
             //x吸附left
             if( Math.abs(_x)<10){
                 _x = 0;
@@ -256,12 +246,12 @@ class View extends PureComponent {
                 _y = 0;
             }
             //x吸附right
-            if( Math.abs(_x+w-width)<10){
-                _x = width-w;
+            if( Math.abs(_x+offsetWidth-width)<10){
+                _x = width-offsetWidth;
             }
             //x吸附bottom
-            if( Math.abs(_y+h-height)<10){
-                _y = height-h;
+            if( Math.abs(_y+offsetHeight-height)<10){
+                _y = height-offsetHeight;
             }
             //居中吸附X
             if( Math.abs(_x-centX)<10){
@@ -272,53 +262,36 @@ class View extends PureComponent {
                 _y = centY;
             }
         }else{
-            this.setState({isNodrop:true});
-            //util.addClass(target,'nodrop');
+            util.addClass(target,'nodrop');
         }
-        this.setState({
-            _x:left-_left+_x,
-            _y:top-_top+_y,
-            x:_x,
-            y:_y
-        });
+        target.style.transform = `translate(${left-_left+_x}px,${top-_top+_y}px)`;
+        target.dataset.posX = _x;
+        target.dataset.posY = _y;
+        window.$VIEW_STATE = { x: _x, y: _y, target, overTarget: this.overObj };
     }
 
-    dragEnd = (ev) => {
-        
-        ev.stopPropagation();
-        const { clientX, clientY } = ev;
+    dargEnd = (event) => {
+        event.stopPropagation();
+        const { clientX, clientY } = event;
         document.onmousemove = null;
         document.onmouseup = null;
         if (window.$POSITON.clientX === clientX && window.$POSITON.clientY === clientY) {
             return false;
         } else {
-            this.setState({isDrag:false});
+            util.removeClass(window.$VIEW_STATE.target, 'drag');
         }
-        if (this.overObj&&this.overObj.dataset.allowdrop==='true') {
-            util.removeClass(this.overObj, 'over');
-            //console.log(this.overObj)
-            this.props.dragEnd && this.props.dragEnd(this);
+        const {target,overTarget} = window.$VIEW_STATE;
+        if (overTarget&&overTarget.dataset.allowdrop==='true') {
+            util.removeClass(overTarget, 'over');
+            this.props.dargEnd && this.props.dargEnd(window.$VIEW_STATE);
         } else {
             const {x,y} = this.start;
-            this.setState({
-                _x:x,
-                _y:y,
-                x,
-                y,
-                isNodrop:false
-            });
-            util.removeClass(this.overObj,'over');
+            target.style.transform = `translate(${x}px,${y}px)`;
+            target.dataset.posX = x;
+            target.dataset.posY = y;
+            util.removeClass(target,'nodrop');
+            util.removeClass(overTarget,'over');
         }
-    }
-
-    dragover = (ev) => {
-        //ev.stopPropagation();
-        //console.log(this)
-    }
-
-    ondrop = (ev) => {
-        //ev.stopPropagation();
-        //console.log(this.props.w)
     }
 
     togglelock = (ev) => {
@@ -328,16 +301,10 @@ class View extends PureComponent {
         if (!editable) {
             const { width, height, left, top } = target.getBoundingClientRect();
             const offsetParentBound = target.offsetParent.getBoundingClientRect();
-            let x = left - offsetParentBound.left;
-            let y = top - offsetParentBound.top;
-            this.setState({
-                _x:x,
-                _y:y,
-                x,
-                y,
-                w:width,
-                h:height
-            });
+            target.dataset.resW = width;
+            target.dataset.resH = height;
+            target.dataset.posX = left - offsetParentBound.left;
+            target.dataset.posY = top - offsetParentBound.top;
         }
         this.setState({ editable: !editable });
         this.props.togglelock && this.props.togglelock({ target: target, editable: !editable });
@@ -374,11 +341,17 @@ class View extends PureComponent {
         if (!editable) {
             return false;
         }
+        const target = ev.target;
         const move = () => {
             ev.preventDefault(ev);
-            this.setState({x,y,_x:x,_y:y})
+            target.style.transform = `translate(${x}px,${y}px)`;
+            target.dataset.posX = x;
+            target.dataset.posY = y;
+            window.$VIEW_STATE.x = x;
+            window.$VIEW_STATE.y = y;
         }
-        let {x,y} = this.state;
+        let x = Number(target.dataset.posX);
+        let y = Number(target.dataset.posY);
         let step = 1;
         if (ev.shiftKey) {
             step = 10;
@@ -409,18 +382,23 @@ class View extends PureComponent {
         ev.stopPropagation();
         ev.preventDefault();
         if (ev.keyCode === 37 || ev.keyCode === 38 || ev.keyCode === 39 || ev.keyCode === 40) {
-            this.props.dragEnd && this.props.dragEnd(this);
+            this.props.dargEnd && this.props.dargEnd(window.$VIEW_STATE);
         }
     }
 
     hover = (ev) => {
+        const { clientX, clientY } = ev;
         ev.stopPropagation();
-        this.setState({isHover:true});
+        let obj = document.elementsFromPoint(clientX, clientY).filter((el)=>util.hasClass(el, 'view'));
+        if (obj[0]) {
+            window.$_HOVER = obj[0];
+            util.addClass(obj[0], "hover");
+        }
     }
 
     onClick = (ev) => {
-        //console.log(this)
         ev.stopPropagation();
+        console.log(this.props.children)
         this.props.onClick&&this.props.onClick();
     }
 
@@ -435,13 +413,13 @@ class View extends PureComponent {
     }
 
     componentDidMount() {
-        //document.addEventListener('mousedown', this.dragStart, false);
+        //document.addEventListener('mousedown', this.dargStart, false);
         //document.addEventListener('mouseover', this.hover, false);
     }
 
     render() {
-        const { className, resizeEnd,allowdrop } = this.props;
-        const { editable,w,h,x,y,_x,_y,isDrag,isHover,isNodrop } = this.state;
+        const { className, resizeEnd, x, y, w, h,allowdrop } = this.props;
+        const { editable } = this.state;
         const sizeW = parseInt(w,10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h,10) >= 0 ? { height: h } : {};
         return (
@@ -449,23 +427,15 @@ class View extends PureComponent {
                 onClick={this.onClick}
                 onDoubleClick={this.onDoubleClick}
                 onContextMenu={this.onMenu}
-                style={{ transform: `translate(${_x}px,${_y}px)`, ...sizeW, ...sizeH }}
+                style={{ transform: `translate(${x}px,${y}px)`, ...sizeW, ...sizeH }}
                 tabIndex={0}
                 onMouseOver={this.hover}
                 onKeyDown={this.keymove}
                 onKeyUp={this.keymoveEnd}
-                data-pos-x={x}
-                data-pos-y={y}
-                data-res-w={w}
-                data-res-h={h}
                 data-editable={editable}
                 data-allowdrop={allowdrop}
-                data-isdrag={isDrag}
-                data-ishover={isHover}
-                data-isnodrop={isNodrop}
                 onMouseOut={this.mouseout}
-                onMouseDown={this.dragStart}
-                onMouseUp={this.ondrop}
+                onMouseDown={this.dargStart}
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
                 {editable&&<ResizeW resizeEnd={resizeEnd} />}

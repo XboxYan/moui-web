@@ -10,7 +10,7 @@ export default class Image extends PureComponent {
     render() {
         const {alt,src} = this.props;
         return (
-            <View allowchild={false} draggable={false} alt={alt} src={src}  {...this.props} >
+            <View allowdrop={false} draggable={false} alt={alt} src={src}  {...this.props} >
                 <img draggable={false} alt={alt} src={src} />
             </View>
         );

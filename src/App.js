@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { HashRouter, Route } from 'react-keeper';
-import Index from './pages';
+import Index from './pages/Home';
 import './App.css';
 
 class App extends PureComponent {
