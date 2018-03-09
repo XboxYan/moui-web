@@ -33,3 +33,8 @@ img{vertical-align: middle;outline: 0;border: 0}
 .ant-menu{ overflow-x: hidden; }
 .ant-layout-sider-children{display: flex;flex-direction: column;}
 .ant-input{min-width: 150px;}
+.ant-layout-sider{ background: #fff;}
+.ant-collapse-content > .ant-collapse-content-box{ padding-bottom: 0;}
+.customPanelStyle{background: #fff;border-radius: 4px; margin-top:24px;border: 0;overflow: 'hidden'}
+.compItem{ cursor: default; user-select: none; padding: 5px; background: #f0f6ff; text-align: center; font-size: 12px;}
+.compItem:hover{color: royalblue; }

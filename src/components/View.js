@@ -3,69 +3,76 @@ import util from '../util';
 import './base.css';
 
 const ResizeW = (props) => {
-    let res = {
-        target: null,
-        w: 0,
-        h: 0
-    }
 
     const resizeStart = (ev, type) => {
         ev.stopPropagation();
         const target = ev.target.parentNode.parentNode;
+        const {x,y,w,h} = props.res;
         const offsetParentBound = target.offsetParent.getBoundingClientRect();
         const { clientX, clientY } = ev;
-        const { left, top, width, height } = target.getBoundingClientRect();
-        const _X = clientX - left + offsetParentBound.left;
-        const _Y = clientY - top + offsetParentBound.top;
-        const x = left - offsetParentBound.left;//初始坐标
-        const y = top - offsetParentBound.top;
-        document.onmousemove = (event)=>resize(target, event, { left, top, width, height, _X, _Y, l: x, t: y,_w:offsetParentBound.width,_h:offsetParentBound.height }, type);
+        const _X = clientX - x;
+        const _Y = clientY - y;
+        document.onmousemove = (event)=>resize( event, { left:x, top:y, width:w, height:h, _X, _Y,_w:offsetParentBound.width,_h:offsetParentBound.height }, type);
         document.onmouseup = resizeEnd;
     }
-    const resize = (target, event, { left, top, width, height, _X, _Y, l, t, _w, _h }, type) => {
+    const resize = ( event, { left, top, width, height, _X, _Y, _w, _h }, type) => {
         event.stopPropagation();
         const { clientX, clientY } = event;
-        let x = l;
-        let y = t;
+        let x = left;
+        let y = top;
         let w = width;
         let h = height;
         switch (type) {
             case 1:
-                h = height + top - clientY;
                 y = clientY - _Y;
+                h = height + top - y;
                 break;
             case 2:
-                w = clientX - left;
+                w = width - left + clientX - _X;
                 break;
             case 3:
-                h = clientY - top;
+                h = height - top + clientY - _Y;
                 break;
             case 4:
-                w = width + left - clientX;
                 x = clientX - _X;
+                w = width + left - x;
                 break;
-            case 5:
-                w = width + left - clientX;
-                h = height + top - clientY;
+            case 5:    
                 x = clientX - _X;
-                y = clientY - _Y;
+                w = width + left - x;
+                if(event.shiftKey){
+                    h = w/width*height;
+                    y = height + top - h;
+                }else{
+                    y = clientY - _Y;
+                    h = height + top - y;
+                }
                 break;
             case 6:
-                w = clientX - left;
-                h = height + top - clientY;
-                y = clientY - _Y;
+                w = width - left + clientX - _X;
+                if(event.shiftKey){
+                    h = w/width*height;
+                    y = height + top - h;
+                }else{
+                    y = clientY - _Y;
+                    h = height + top - y;
+                }               
                 break;
             case 7:
-                w = width + left - clientX;
-                h = clientY - top;
                 x = clientX - _X;
+                w = width + left - x;
+                if(event.shiftKey){
+                    h = w/width*height;
+                }else{
+                    y = clientY - _Y;
+                } 
                 break;
             case 8:
-                w = clientX - left;
+                w = width - left + clientX - _X;
                 if(event.shiftKey){
-                    h = parseInt(w/width*height,10);
+                    h = w/width*height;
                 }else{
-                    h = clientY - top;
+                    h = height - top + clientY - _Y;
                 }
                 break;
             default:
@@ -91,21 +98,14 @@ const ResizeW = (props) => {
         if( Math.abs(y+h-_h)<10){
             h = _h-y;
         }
-        target.style.width = w + 'px';
-        target.style.height = h + 'px';
-        target.style.transform = `translate(${x}px,${y}px)`;
-        target.dataset.resW = w;
-        target.dataset.resH = h;
-        target.dataset.posX = x;
-        target.dataset.posY = y;
-        res = { target, w, h, x, y };
+        props.resize({x,y,w,h});
     }
 
     const resizeEnd = (ev) => {
         ev.stopPropagation();
         document.onmousemove = null;
         document.onmouseup = null;
-        props.resizeEnd && props.resizeEnd(res);
+        props.resizeEnd && props.resizeEnd();
     }
 
     return (
@@ -114,9 +114,9 @@ const ResizeW = (props) => {
             <i className="a-l a-right" onMouseDown={(ev) => resizeStart(ev, 2)}></i>
             <i className="a-l a-bottom" onMouseDown={(ev) => resizeStart(ev, 3)}></i>
             <i className="a-l a-left" onMouseDown={(ev) => resizeStart(ev, 4)}></i>
-            <i className="a-d a-topLeft" onMouseDown={(ev) => resizeStart(ev, 5)}></i>
-            <i className="a-d a-topRight" onMouseDown={(ev) => resizeStart(ev, 6)}></i>
-            <i className="a-d a-bottomLeft" onMouseDown={(ev) => resizeStart(ev, 7)}></i>
+            <i data-tips="按住Shift等比缩放" className="a-d a-topLeft" onMouseDown={(ev) => resizeStart(ev, 5)}></i>
+            <i data-tips="按住Shift等比缩放" className="a-d a-topRight" onMouseDown={(ev) => resizeStart(ev, 6)}></i>
+            <i data-tips="按住Shift等比缩放" className="a-d a-bottomLeft" onMouseDown={(ev) => resizeStart(ev, 7)}></i>
             <i data-tips="按住Shift等比缩放" className="a-d a-bottomRight" onMouseDown={(ev) => resizeStart(ev, 8)}></i>
         </span>
     )
@@ -144,7 +144,8 @@ class View extends PureComponent {
             _y:props.y,
             isDrag:false,
             isHover:false,
-            isNodrop:false
+            isNodrop:false,
+            isOver:false
         };
     }
 
@@ -311,60 +312,48 @@ class View extends PureComponent {
         }
     }
 
+    resize = ({x,y,w,h}) => {
+        this.setState({
+            _x:x,
+            _y:y,
+            x,
+            y,
+            w,
+            h
+        });
+    }
+
+    resizeEnd = () => {
+        this.props.resizeEnd&&this.props.resizeEnd(this);
+    }
+
     dragover = (ev) => {
         //ev.stopPropagation();
         //console.log(this)
     }
 
-    ondrop = (ev) => {
-        //ev.stopPropagation();
-        //console.log(this.props.w)
+    ondragover = (ev) => {
+        ev.stopPropagation();
+        const { allowdrop } = this.props;
+        if(allowdrop){
+            this.setState({ isOver: true });
+            ev.preventDefault();
+        }
+    }
+
+    ondragleave = () => {
+        this.setState({ isOver: false });
+    }
+
+    ondrop = () => {
+        this.setState({ isOver: false });
     }
 
     togglelock = (ev) => {
         ev.stopPropagation();
-        const target = ev.target.parentNode;
         let { editable } = this.state;
-        if (!editable) {
-            const { width, height, left, top } = target.getBoundingClientRect();
-            const offsetParentBound = target.offsetParent.getBoundingClientRect();
-            let x = left - offsetParentBound.left;
-            let y = top - offsetParentBound.top;
-            this.setState({
-                _x:x,
-                _y:y,
-                x,
-                y,
-                w:width,
-                h:height
-            });
-        }
         this.setState({ editable: !editable });
-        this.props.togglelock && this.props.togglelock({ target: target, editable: !editable });
-    }
-
-    //编辑状态
-    keydown = (ev) => {
-        ev.stopPropagation();
-        const { editable } = this.state;
-        if (!editable) {
-            return false;
-        }
-        //进入编辑尺寸
-        if (ev.keyCode === 84 && ev.altKey) {
-            if (util.hasClass(ev.target, "resize")) {
-                util.removeClass(ev.target, "resize");
-            } else {
-                const { width, height } = ev.target.getBoundingClientRect();
-                ev.target.dataset.resW = width;
-                ev.target.dataset.resH = height;
-                util.addClass(ev.target, "resize");
-            }
-        }
-        //退出编辑尺寸
-        if (ev.keyCode === 13 && ev.altKey) {
-            util.removeClass(ev.target, "resize");
-        }
+        this.props.togglelock && this.props.togglelock(this);
     }
 
     //键盘移动
@@ -440,8 +429,8 @@ class View extends PureComponent {
     }
 
     render() {
-        const { className, resizeEnd,allowdrop } = this.props;
-        const { editable,w,h,x,y,_x,_y,isDrag,isHover,isNodrop } = this.state;
+        const { className, allowdrop } = this.props;
+        const { editable,w,h,x,y,_x,_y,isDrag,isHover,isNodrop,isOver } = this.state;
         const sizeW = parseInt(w,10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h,10) >= 0 ? { height: h } : {};
         return (
@@ -462,13 +451,16 @@ class View extends PureComponent {
                 data-allowdrop={allowdrop}
                 data-isdrag={isDrag}
                 data-ishover={isHover}
+                data-isover={isOver}
                 data-isnodrop={isNodrop}
+                onDragOver={this.ondragover}
+                onDragLeave={this.ondragleave}
+                onDrop={this.ondrop}
                 onMouseOut={this.mouseout}
                 onMouseDown={this.dragStart}
-                onMouseUp={this.ondrop}
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
-                {editable&&<ResizeW resizeEnd={resizeEnd} />}
+                {editable&&<ResizeW res={{x,y,w,h}} resize={this.resize} resizeEnd={this.resizeEnd} />}
                 {this.props.children}
             </div>
         );

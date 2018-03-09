@@ -3,14 +3,13 @@ import { Menu, Icon } from 'antd';
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 
-export default class SiderLeft extends PureComponent {
+export default class ProjectList extends PureComponent {
   handleClick = (e) => {
     console.log('click ', e);
   }
   render() {
     return (
       <Menu
-        style={{maxHeight:'60%'}}
         onClick={this.handleClick}
         defaultSelectedKeys={['1']}
         defaultOpenKeys={['sub1']}

@@ -5,7 +5,7 @@
 .view[data-isdrag=true]::before,.view[data-editable=true]:focus::before{ top: -5px; right: -10px; transform: translateX(100%);  content:"x : "attr(data-pos-x)" px\Ay : "attr(data-pos-y)" px"; }
 .view[data-editable=true]:focus::after{ left: -5px; bottom: -10px; transform: translateY(100%); content:"w : "attr(data-res-w)" px\Ah : "attr(data-res-h)" px"; }
 .view[data-ishover=true]{ outline:1px dashed royalblue; }
-.view.over{ background: rgb(250, 253, 205); outline:1px dashed royalblue;}
+.view.over,.view[data-isover=true]{ background: rgb(250, 253, 205); outline:1px dashed royalblue;}
 .view:focus{ outline:1px solid royalblue; z-index: 10; }
 .view:hover{ z-index: 10;}
 .view[data-isdrag=true]{box-shadow: 0 0 20px royalblue; z-index: 30;}
@@ -34,5 +34,5 @@
 [data-tips]::before {content: attr(data-tips);left: 100%; top:-100%;border-radius: 3px;margin-bottom: 12px;padding: 6px 10px;line-height: 18px;background-color: #373c42;text-align: left;color: #fff;font-size: 12px;font-style: normal;font-family: 'microsoft yahei';white-space: nowrap;}
 [data-tips]::after {content: '';left: 50%;width: 0;height: 0;overflow: hidden;border: 6px solid transparent;border-top-color: #373c42;}
 [data-tips]:hover:before,[data-tips]:hover:after {visibility: visible;}
-[data-tips]::before,[data-tips]::after { position: absolute;transform: translate(20px,20px);opacity: 0;transition: .15s .15s;}
-[data-tips]:hover::before,[data-tips]:hover::after {transform: translate(10px,10px);opacity: 1;}
+[data-tips]::before,[data-tips]::after { position: absolute; visibility: hidden; transform: translate(20px,20px);opacity: 0;transition: .15s .15s;}
+[data-tips]:hover::before,[data-tips]:hover::after {visibility: visible;transform: translate(10px,10px);opacity: 1;}

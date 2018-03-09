@@ -1,55 +1,82 @@
 import React, { PureComponent } from 'react';
-import { Layout, Icon } from 'antd';
-import SiderLeft from './SiderLeft';
+import { Layout, Icon, Button } from 'antd';
+import ProjectList from './ProjectList';
+import CompoList from './CompoList';
+import StoreProvider, { StoreContext } from '../../store';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
 const { Header, Footer, Sider, Content } = Layout;
 
+const type = {
+  'View':View,
+  'Text':Text,
+  'Image':Image,
+}
+
 
 export default class Index extends PureComponent {
+  obj = {}
   dragEnd = (a) => {
     console.log(a.overObj)
   }
-  resizeEnd = ({ target, x, y, w, h }) => {
-    console.log(target, x, y, w, h)
+  resizeEnd = (a) => {
+    console.log(a)
   }
   onChange = (value) => {
     console.log(value)
   }
+  loop = (data) => data.map((item,i) => {
+    const Tag = type[item.type];
+    if (item.child && item.child.length) {
+      return <Tag key={item.id} ref={(ref)=>this.obj['view-'+item.id]=ref} {...item.style} dragEnd={this.dragEnd} {...item.props}>{this.loop(item.child)}</Tag>;
+    }
+    return <Tag key={item.id} ref={(ref)=>this.obj['view-'+item.id]=ref} {...item.style} dragEnd={this.dragEnd} {...item.props} />;
+  });
   componentDidMount() {
-    //console.log(this.refs.view)
+    //console.log(this.refs.view.props.children.props.children[0].props)
+  }
+  onClick = () => {
+    console.log(this.obj)
   }
   render() {
     return (
-      <Layout>
-        <Header className="header">
-          <div className="logo"><Icon type="cloud" /> Coship</div>
-        </Header>
+      <StoreProvider>
         <Layout>
-          <Sider
-            collapsedWidth={0}
-            collapsible={true}
-          >
-            <SiderLeft />
-            <div style={{ flex: 1, background: 'royalblue' }}></div>
-          </Sider>
+          <Header className="header">
+            <div className="logo"><Icon type="cloud" /> Coship</div>
+          </Header>
           <Layout>
-            <Content>
-              <View w={'100%'} h={'100%'} onChange={this.onChange} editable={false}>
-                <View dragEnd={this.dragEnd} ref="view" w={200} h={200}>
-                  <Image dragEnd={this.dragEnd}  x={20} y={20} />
-                </View>
-                <Image dragEnd={this.dragEnd} resizeEnd={this.resizeEnd} src="http://img.kuqin.com/upimg/allimg/160526/210301J61-1.png" w={150} x={200} y={200} />
-                <Text x={50} y={150} text="和经济环境开会就开会就看很近很近" onChange={this.onChange} />
-                <Text multiline={false} x={50} y={200} />
-              </View>
-            </Content>
-            <Footer>Footer</Footer>
+            <Sider
+              collapsedWidth={0}
+              collapsible={true}
+            >
+              <ProjectList />
+              <CompoList />
+            </Sider>
+            <Layout>
+              <Content ref="view">
+                <StoreContext.Consumer>
+                  {context => (
+                    this.loop(context.layout)
+                  )}
+                </StoreContext.Consumer>
+              </Content>
+              <Footer>
+                Footer
+            </Footer>
+            </Layout>
+            <Sider>
+              <StoreContext.Consumer>
+                {context => (
+                  <Button onClick={context.dispatch}>Context 测试</Button>
+                )}
+              </StoreContext.Consumer>
+              <Button onClick={this.onClick}>Layout 测试</Button>
+            </Sider>
           </Layout>
-          <Sider>2</Sider>
         </Layout>
-      </Layout>
+      </StoreProvider>
     );
   }
 }
