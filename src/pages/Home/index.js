@@ -17,6 +17,7 @@ const type = {
 
 export default class Index extends PureComponent {
   obj = {}
+  
   dragEnd = (a) => {
     console.log(a.overObj)
   }
