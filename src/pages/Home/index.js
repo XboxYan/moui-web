@@ -9,9 +9,9 @@ import Text from '../../components/Text';
 const { Header, Footer, Sider, Content } = Layout;
 
 const type = {
-  'View':View,
-  'Text':Text,
-  'Image':Image,
+  'View': View,
+  'Text': Text,
+  'Image': Image,
 }
 
 
@@ -26,19 +26,23 @@ export default class Index extends PureComponent {
   onChange = (value) => {
     console.log(value)
   }
-  loop = (data) => data.map((item,i) => {
+  onFocus = (a) => {
+    //a.children = []
+    console.log(a.props.children)
+  }
+  loop = (data, m = 'view') => data.map((item, i) => {
     const Tag = type[item.type];
+    const key = m + '-' + i;
+    let child = null;
     if (item.child && item.child.length) {
-      return <Tag key={item.id} ref={(ref)=>this.obj['view-'+item.id]=ref} {...item.style} dragEnd={this.dragEnd} {...item.props}>{this.loop(item.child)}</Tag>;
+      child = this.loop(item.child, key)
     }
-    return <Tag key={item.id} ref={(ref)=>this.obj['view-'+item.id]=ref} {...item.style} dragEnd={this.dragEnd} {...item.props} />;
+    return <Tag key={key} onFocus={this.onFocus} ref={(ref) => this.obj['view-' + item.id] = ref} style={item.style} dragEnd={this.dragEnd} {...item.props} >{child}</Tag>;
   });
   componentDidMount() {
     //console.log(this.refs.view.props.children.props.children[0].props)
   }
-  onClick = () => {
-    console.log(this.obj)
-  }
+
   render() {
     return (
       <StoreProvider>

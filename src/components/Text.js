@@ -12,7 +12,9 @@ export default class Text extends PureComponent {
         super(props);
         this.state = {
             contentEditable: false,
-            text: props.text
+            multiline:props.multiline,
+            text: props.text,
+            style: props.style
         };
     }
 
@@ -29,12 +31,23 @@ export default class Text extends PureComponent {
         this.props.onChange && this.props.onChange(value);
     }
 
+    onFocus = () => {
+        this.props.onFocus&&this.props.onFocus(this);  
+    }
+
+    dragEnd = (a) => {
+        console.log(a)
+        const {x,y,_x,_y,w,h} = a.state;
+        this.setState({
+            style:{x,y,_x,_y,w,h}
+        })
+    }
+
     render() {
-        const { multiline } = this.props;
-        const { contentEditable, text } = this.state;
+        const { contentEditable, text, style, multiline } = this.state;
         return (
 
-            <View allowdrop={false} {...this.props} onDoubleClick={this.onDoubleClick} editable={!contentEditable}>
+            <View allowdrop={false} style={style} onFocus={this.onFocus} dragEnd={this.dragEnd} onDoubleClick={this.onDoubleClick} editable={!contentEditable}>
                 {
                     contentEditable ?
                         <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />

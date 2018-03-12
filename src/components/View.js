@@ -128,20 +128,18 @@ class View extends PureComponent {
         editable: true,
         allowdrop : true,
         className: "",
-        x: 0,
-        y: 0,
     }
 
     constructor(props) {
         super(props);
         this.state = {
             editable: props.editable,
-            w:props.w,
-            h:props.h,
-            x:props.x,
-            y:props.y,
-            _x:props.x,
-            _y:props.y,
+            w:props.style.w,
+            h:props.style.h,
+            x:props.style.x||0,
+            y:props.style.y||0,
+            _x:props.style.x||0,
+            _y:props.style.y||0,
             isDrag:false,
             isHover:false,
             isNodrop:false,
@@ -158,8 +156,6 @@ class View extends PureComponent {
 
     //放置元素
     overObj = null;
-
-
 
     mouseout = (ev) => {
         ev.stopPropagation();
@@ -410,22 +406,44 @@ class View extends PureComponent {
     onClick = (ev) => {
         //console.log(this)
         ev.stopPropagation();
-        this.props.onClick&&this.props.onClick();
+        this.props.onClick&&this.props.onClick(this);
+    }
+
+    onFocus = (ev) => {
+        ev.stopPropagation();
+        this.props.onFocus&&this.props.onFocus(this);
     }
 
     onDoubleClick = (ev) => {
+        ev.stopPropagation();
         this.props.onDoubleClick&&this.props.onDoubleClick(ev);
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        if(nextProps.editable!==this.props.editable){
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.editable!==this.state.editable){
             this.setState({editable:nextProps.editable});
+        }
+        if(nextProps.style.x!==this.state.x){
+            this.setState({x:nextProps.style.x,_x:nextProps.style.x});
+        }
+        if(nextProps.style.y!==this.state.y){
+            this.setState({y:nextProps.style.y,_y:nextProps.style.y});
+        }
+        if(nextProps.style.w!==this.state.w){
+            this.setState({w:nextProps.style.w});
+        }
+        if(nextProps.style.h!==this.state.h){
+            this.setState({h:nextProps.style.h});
         }
     }
 
     componentDidMount() {
         //document.addEventListener('mousedown', this.dragStart, false);
         //document.addEventListener('mouseover', this.hover, false);
+    }
+
+    renderChild = () => {
+        return this.props.children;
     }
 
     render() {
@@ -443,6 +461,7 @@ class View extends PureComponent {
                 onMouseOver={this.hover}
                 onKeyDown={this.keymove}
                 onKeyUp={this.keymoveEnd}
+                onFocus={this.onFocus}
                 data-pos-x={x}
                 data-pos-y={y}
                 data-res-w={w}
@@ -461,7 +480,7 @@ class View extends PureComponent {
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
                 {editable&&<ResizeW res={{x,y,w,h}} resize={this.resize} resizeEnd={this.resizeEnd} />}
-                {this.props.children}
+                {this.renderChild()}
             </div>
         );
     }
