@@ -28,6 +28,7 @@ const expCom = [
   },
 ]
 
+
 class ComItem extends PureComponent {
   dragStart = (ev) => {
 

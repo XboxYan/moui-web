@@ -18,19 +18,6 @@ const type = {
 export default class Index extends PureComponent {
   obj = {}
   
-  dragEnd = (a) => {
-    console.log(a.overObj)
-  }
-  resizeEnd = (a) => {
-    console.log(a)
-  }
-  onChange = (value) => {
-    console.log(value)
-  }
-  onFocus = (a) => {
-    //a.children = []
-    console.log(a.props.children)
-  }
   loop = (data, m = 'view') => data.map((item, i) => {
     const Tag = type[item.type];
     const key = m + '-' + i;
@@ -38,7 +25,7 @@ export default class Index extends PureComponent {
     if (item.child && item.child.length) {
       child = this.loop(item.child, key)
     }
-    return <Tag key={key} onFocus={this.onFocus} ref={(ref) => this.obj['view-' + item.id] = ref} style={item.style} dragEnd={this.dragEnd} {...item.props} >{child}</Tag>;
+    return <Tag key={key} onFocus={this.onFocus} ref={(ref) => this.obj['view-' + item.id] = ref} style={item.style} {...item.props} >{child}</Tag>;
   });
   componentDidMount() {
     //console.log(this.refs.view.props.children.props.children[0].props)
@@ -59,7 +46,7 @@ export default class Index extends PureComponent {
               <ProjectList />
               <CompoList />
             </Sider>
-            <Layout>
+            <Layout id='center'>
               <Content ref="view">
                 <StoreContext.Consumer>
                   {context => (
