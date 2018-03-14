@@ -30,15 +30,19 @@ const expCom = [
 
 
 class ComItem extends PureComponent {
-  dragStart = (ev) => {
-
+  onDragStart = (ev) => {
+    const { clientX, clientY } = ev;
+    const { left, top } = ev.target.getBoundingClientRect();
+    ev.dataTransfer.setData("source",'left');
+    ev.dataTransfer.setData("x",clientX - left + 200);
+    ev.dataTransfer.setData("y",clientY - top + 65);
   }
   render() {
-    const {item} = this.props;
+    const { item } = this.props;
     return (
       <div
         draggable={true}
-        onMouseDown={this.dragStart}
+        onDragStart={this.onDragStart}
         className="compItem"
       >
         <Icon style={{ fontSize: 20 }} type={item.ico} />
@@ -59,7 +63,7 @@ export default class ProjectList extends PureComponent {
             dataSource={baseCom}
             renderItem={item => (
               <List.Item>
-                <ComItem item={item}/>
+                <ComItem item={item} />
               </List.Item>
             )}
           />
@@ -70,7 +74,7 @@ export default class ProjectList extends PureComponent {
             dataSource={expCom}
             renderItem={item => (
               <List.Item>
-                <ComItem item={item}/>
+                <ComItem item={item} />
               </List.Item>
             )}
           />

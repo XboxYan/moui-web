@@ -28,7 +28,7 @@
 img{vertical-align: middle;outline: 0;border: 0}
 .header{ background: royalblue; color: #fff;}
 .logo{ font-size: 24px;}
-.ant-layout-content{ position: relative; }
+.ant-layout-content{ position: relative; transform:translate(0,0); }
 .ant-layout-sider-zero-width-trigger{ z-index: 50;}
 .ant-menu{ overflow-x: hidden; }
 .ant-layout-sider-children{display: flex;flex-direction: column;}

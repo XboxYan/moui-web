@@ -1,13 +1,20 @@
 import React, { PureComponent } from 'react';
 import Draggble from './Draggble';
+import AddStyle from './AddStyle';
 
-@Draggble
+@Draggble()
+@AddStyle
 export default class View extends PureComponent {
 
+    defultStyle = {
+        background:'pink'
+    }
+
     render() {
-        const { w,h } = this.props;
+        const { style } = this.props;
+        //console.log(this.props)
         return (
-            <div {...this.props} className='view'>{this.props.children}</div>
+            <div style={{...this.defultStyle,...style}} >{this.props.children}</div>
         );
     }
 }

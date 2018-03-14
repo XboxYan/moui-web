@@ -6,6 +6,7 @@ import StoreProvider, { StoreContext } from '../../store';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
+import Root from '../../components/Root';
 const { Header, Footer, Sider, Content } = Layout;
 
 const type = {
@@ -16,8 +17,17 @@ const type = {
 
 
 export default class Index extends PureComponent {
+
   obj = {}
-  
+
+  onDragEnd = (A, x, y) => {
+    console.log(A, x, y)
+  }
+
+  onDrop = (A, x, y) => {
+    console.log(A, x, y)
+  } 
+
   loop = (data, m = 'view') => data.map((item, i) => {
     const Tag = type[item.type];
     const key = m + '-' + i;
@@ -25,8 +35,19 @@ export default class Index extends PureComponent {
     if (item.child && item.child.length) {
       child = this.loop(item.child, key)
     }
-    return <Tag key={key} onFocus={this.onFocus} ref={(ref) => this.obj['view-' + item.id] = ref} style={item.style} {...item.props} >{child}</Tag>;
+    return <Root store={item.layout}>{child}</Root>;
   });
+
+  renderView = (layout) => {
+    const { type: Type, x, y, width, height, children } = layout;
+    return (
+      <Type {...x} {...y} {...width} {...height}>
+        {
+          children
+        }
+      </Type>
+    )
+  }
   componentDidMount() {
     //console.log(this.refs.view.props.children.props.children[0].props)
   }
@@ -49,9 +70,7 @@ export default class Index extends PureComponent {
             <Layout id='center'>
               <Content ref="view">
                 <StoreContext.Consumer>
-                  {context => (
-                    this.loop(context.layout)
-                  )}
+                  {context => <Root store={context.layout} />}
                 </StoreContext.Consumer>
               </Content>
               <Footer>
