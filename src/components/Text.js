@@ -2,21 +2,20 @@ import React, { PureComponent } from 'react';
 import EditView from './EditView';
 import {StoreContext} from '../store';
 import { Input } from 'antd';
-import Draggble from './Draggble';
 
+const defaultProps = {
+    text: '默认文本',
+    multiline: true
+}
 
 export default class Text extends PureComponent {
     static defaultProps = {
-        text: '默认文本',
-        multiline: true
+        ...defaultProps
     }
     constructor(props) {
         super(props);
         this.state = {
             contentEditable: false,
-            multiline:props.multiline,
-            text: props.text,
-            style: props.style
         };
     }
 
@@ -29,28 +28,26 @@ export default class Text extends PureComponent {
         const { value } = ev.target;
         this.setState({
             contentEditable: false,
-            text: value
         });
-        this.props.onChange && this.props.onChange(value);
+        const {index} = this.props;
+        this.props.onChange && this.props.onChange(value,index,['props','text']);
     }
 
     onFocus = () => {
         this.props.onFocus&&this.props.onFocus(this);  
     }
 
-    dragEnd = (a) => {
-        console.log(a)
-        const {x,y,_x,_y,w,h} = a.state;
-        // this.setState({
-        //     style:{x,y,_x,_y,w,h}
-        // })
+    dragEnd = ({x,y},target) => {
+        const {index} = this.props;
+        this.props.dragEnd&&this.props.dragEnd({x,y},target,index,['style']);  
     }
 
     render() {
-        const { contentEditable, text, style, multiline } = this.state;
+        const { contentEditable } = this.state;
+        const {text,multiline} = {...defaultProps,...this.props.props};
         return (
 
-            <EditView {...this.props} allowdrop={false} onDoubleClick={this.onDoubleClick} editable={!contentEditable}>
+            <EditView {...this.props} allowdrop={false} dragEnd={this.dragEnd} onFocus={this.onFocus} onDoubleClick={this.onDoubleClick} editable={!contentEditable}>
                 {
                     contentEditable ?
                         <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />

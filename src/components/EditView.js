@@ -295,7 +295,7 @@ class EditView extends PureComponent {
             util.removeClass(this.overObj, 'over');
             //console.log(this.overObj)
             const { x, y } = this.state;
-            this.props.dragEnd && this.props.dragEnd({ x, y });
+            this.props.dragEnd && this.props.dragEnd({ x, y },this.overObj.dataset.index);
         } else {
             const { x, y } = this.start;
             this.setState({
@@ -466,6 +466,7 @@ class EditView extends PureComponent {
     render() {
         const { className, allowdrop, index } = this.props;
         const { editable, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
+        //const {x,y,w,h} = this.props;
         const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
         return (

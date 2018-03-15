@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
-import StoreProvider, { StoreContext } from '../../store';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
-import {ADD} from '../../util/action';
+import {ADD,CHANGE,MOVE} from '../../util/action';
 
 const type = {
     'View': View,
@@ -24,9 +23,11 @@ export default class Center extends PureComponent {
         console.log(A)
     }
 
-    dragEnd = ({ x, y }) => {
-        console.log(x, y)
-
+    dragEnd = ({ x, y },target,index,path) => {
+        const {layout,updata} = this.props.store;
+        console.log(layout,{ x, y },target,index,path)
+        const _layout = MOVE(layout,{ x, y },target,index,path);
+        updata(_layout);
     }
 
     addCom = ({ type, x, y, index }) => {
@@ -35,6 +36,12 @@ export default class Center extends PureComponent {
         const _layout = ADD(layout,index,type,{x,y});
         updata(_layout);
         //console.log(type, x, y, index,layout)
+    }
+
+    onChange = (value,index,path) => {
+        const {layout,updata} = this.props.store;
+        const _layout = CHANGE(layout,index,value,path);
+        updata(_layout);
     }
 
     loop = (data, m = 'tree') => data.map((item, i) => {
@@ -47,6 +54,7 @@ export default class Center extends PureComponent {
         return (
             <Tag
                 dragEnd={this.dragEnd}
+                onChange={this.onChange}
                 index={key}
                 addCom={this.addCom}
                 onFocus={this.onFocus}

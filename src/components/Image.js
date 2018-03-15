@@ -15,12 +15,16 @@ export default class Image extends PureComponent {
     onFocus = () => {
         this.props.onFocus&&this.props.onFocus(this);  
     }
+
+    dragEnd = ({x,y},target) => {
+        const {index} = this.props;
+        this.props.dragEnd&&this.props.dragEnd({x,y},target,index,['style']);  
+    }
     
     render() {
         const {alt,src} = {...defaultProps,...this.props.props};
-        console.log(src)
         return (
-            <EditView {...this.props} allowdrop={false} onFocus={this.onFocus}>
+            <EditView {...this.props} dragEnd={this.dragEnd} allowdrop={false} onFocus={this.onFocus}>
                 <img draggable={false} alt={alt} src={src} />
             </EditView>
         );
