@@ -1,21 +1,31 @@
 import React, { PureComponent } from 'react';
-import Draggble from './Draggble';
-import AddStyle from './AddStyle';
+import EditView from './EditView';
 
-@Draggble()
-@AddStyle
+const defaultProps = {
+    w:100,
+    h:100
+}
+
 export default class View extends PureComponent {
-
-    defultStyle = {
-        background:'pink'
+    static defaultProps = {
+        ...defaultProps
     }
-
+    constructor(props) {
+        super(props);
+        this.state = {
+            style: props.style
+        };
+    }
+    onFocus = () => {
+        this.props.onFocus && this.props.onFocus(this);
+    }
     render() {
-        const { style } = this.props;
-        //console.log(this.props)
+        const style = {...defaultProps,...this.props.style}
+        console.log(style)
         return (
-            <div style={{...this.defultStyle,...style}} >{this.props.children}</div>
+            <EditView {...this.props} style={style} onFocus={this.onFocus}>
+                {this.props.children}
+            </EditView>
         );
     }
 }
-

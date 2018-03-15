@@ -2,13 +2,13 @@
 .view.filter{ pointer-events: none;}
 .view.filter>.view{ pointer-events: all;}
 .view::before,.view::after{ white-space: pre; position: absolute; font-size: 12px; line-height: 16px; color: #fff; background: rgba(0,0,0,.8); border-radius: 3px; padding: 3px 5px;}
-.view[data-isdrag=true]::before,.view[data-editable=true]:focus::before{ top: -5px; right: -10px; transform: translateX(100%);  content:"x : "attr(data-pos-x)" px\Ay : "attr(data-pos-y)" px"; }
+.view[data-isdrag=true]::before,.view[data-editable=true]::before{ top: -5px; right: -10px; transform: translateX(100%);  content:"x : "attr(data-pos-x)" px\Ay : "attr(data-pos-y)" px"; }
 .view[data-editable=true]:focus::after{ left: -5px; bottom: -10px; transform: translateY(100%); content:"w : "attr(data-res-w)" px\Ah : "attr(data-res-h)" px"; }
 .view[data-ishover=true]{ outline:1px dashed royalblue; }
 .view.over,.view[data-isover=true]{ background: rgb(250, 253, 205); outline:1px dashed royalblue;}
 .view:focus{ outline:1px solid royalblue; z-index: 10; }
 .view:hover{ z-index: 10;}
-.view[data-isdrag=true]{box-shadow: 0 0 20px royalblue; z-index: 30;}
+.view[data-isdrag=true]{ opacity: 0;}
 .a-resize{ visibility: hidden; }
 .a-resize i{ position: absolute; box-sizing: border-box;}
 .a-d{ background: #fff; width: 10px; height: 10px; border: 1px solid royalblue; }
@@ -36,3 +36,4 @@
 [data-tips]:hover:before,[data-tips]:hover:after {visibility: visible;}
 [data-tips]::before,[data-tips]::after { position: absolute; visibility: hidden; transform: translate(20px,20px);opacity: 0;transition: .15s .15s;}
 [data-tips]:hover::before,[data-tips]:hover::after {visibility: visible;transform: translate(10px,10px);opacity: 1;}
+.viewprew{ position: fixed; pointer-events: none; opacity: 1!important;}

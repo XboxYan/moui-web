@@ -38,6 +38,7 @@ export default function (option={allowDrap:true}) {
 
             onDragStart = (ev) => {
                 this.setState({ isdrag: true });
+                ev.dataTransfer.setData("source",'center');
                 ev.stopPropagation();
                 const { clientX, clientY } = ev;
                 const { left, top, width, height } = ev.target.getBoundingClientRect();
@@ -74,12 +75,19 @@ export default function (option={allowDrap:true}) {
                     ev.preventDefault();
                     const source = ev.dataTransfer.getData('source');
                     const { clientX, clientY } = ev;
-                    
+                    let x = 0;
+                    let y = 0;
+                    console.log(this)
                     if(source==='left'){
-                        let x = clientX -ev.dataTransfer.getData('x')-this.state.x;
-                        let y = clientY -ev.dataTransfer.getData('y')-this.state.y;
-                        this.props.onDrop && this.props.onDrop(this,x,y);
+                        x = clientX - Number(ev.dataTransfer.getData('x'))-this.state.x;
+                        y = clientY - Number(ev.dataTransfer.getData('y'))-this.state.y;
+                        
+                    }else if(source==='center'){
+                        x = clientX -this.state.x;
+                        y = clientY -this.state.y;
                     }
+                    console.log(x,y)
+                    this.props.onDrop && this.props.onDrop(this,x,y);
                 }
             }
 

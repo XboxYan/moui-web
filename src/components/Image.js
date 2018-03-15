@@ -1,29 +1,28 @@
 import React, { PureComponent } from 'react';
-import View from './View';
+import EditView from './EditView';
 import src from '../img/default_img.png';
+
+const defaultProps = {
+    alt: '',
+    src: src
+}
 
 export default class Image extends PureComponent {
     static defaultProps = {
-        alt: '',
-        src: src
+        ...defaultProps
     }
-    constructor(props) {
-        super(props);
-        this.state = {
-            src: props.src,
-            alt: props.alt,
-            style: props.style
-        };
-    }
+
     onFocus = () => {
         this.props.onFocus&&this.props.onFocus(this);  
     }
+    
     render() {
-        const {alt,src,style} = this.state;
+        const {alt,src} = {...defaultProps,...this.props.props};
+        console.log(src)
         return (
-            <View allowdrop={false} style={style} onFocus={this.onFocus}>
+            <EditView {...this.props} allowdrop={false} onFocus={this.onFocus}>
                 <img draggable={false} alt={alt} src={src} />
-            </View>
+            </EditView>
         );
     }
 }

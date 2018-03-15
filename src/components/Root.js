@@ -7,23 +7,13 @@ import { StoreContext } from '../store';
 import View from './View';
 import Text from './Text';
 
-const iiHOC = (WrappedComponent) => class extends WrappedComponent {
-    render() {
-        if(this.props.store.children&&this.props.store.children.length>0){
-            return <WrappedComponent>{super.render()}</WrappedComponent>
-        }
-        return super.render()
-    }
-}
-
-@iiHOC
 export default class Root extends PureComponent {
     onDrop = (context) => (A, x, y) => {
         const { store, updata } = this.props;
         const M = new ComProps(View, [x, y, 100, 100])
         store.children.push(M);
         console.log(context)
-        context.updata(store);
+        //context.updata(store);
     }
 
     _render = () => {
@@ -32,11 +22,15 @@ export default class Root extends PureComponent {
 
     render() {
         const { type: Type, style } = this.props.store;
-        //console.log(this.props)
+        console.log(this.props)
         return (
             <StoreContext.Consumer>
                 {
-                    context => <Type style={style} onDrop={this.onDrop(context)}></Type>
+                    context => <Type style={style} onDrop={this.onDrop(context)}>
+                    {
+                        this.props.store.children.map((el,i)=><Root key={i} store={el.children} />)
+                    }   
+                    </Type>
                 }
             </StoreContext.Consumer>
         );

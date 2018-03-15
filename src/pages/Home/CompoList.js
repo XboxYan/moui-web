@@ -32,8 +32,10 @@ const expCom = [
 class ComItem extends PureComponent {
   onDragStart = (ev) => {
     const { clientX, clientY } = ev;
+    const { item } = this.props;
     const { left, top } = ev.target.getBoundingClientRect();
     ev.dataTransfer.setData("source",'left');
+    ev.dataTransfer.setData("type",item.type);
     ev.dataTransfer.setData("x",clientX - left + 200);
     ev.dataTransfer.setData("y",clientY - top + 65);
   }

@@ -7,15 +7,15 @@ const ResizeW = (props) => {
     const resizeStart = (ev, type) => {
         ev.stopPropagation();
         const target = ev.target.parentNode.parentNode;
-        const {x,y,w,h} = props.res;
+        const { x, y, w, h } = props.res;
         const offsetParentBound = target.offsetParent.getBoundingClientRect();
         const { clientX, clientY } = ev;
         const _X = clientX - x;
         const _Y = clientY - y;
-        document.onmousemove = (event)=>resize( event, { left:x, top:y, width:w, height:h, _X, _Y,_w:offsetParentBound.width,_h:offsetParentBound.height }, type);
+        document.onmousemove = (event) => resize(event, { left: x, top: y, width: w, height: h, _X, _Y, _w: offsetParentBound.width, _h: offsetParentBound.height }, type);
         document.onmouseup = resizeEnd;
     }
-    const resize = ( event, { left, top, width, height, _X, _Y, _w, _h }, type) => {
+    const resize = (event, { left, top, width, height, _X, _Y, _w, _h }, type) => {
         event.stopPropagation();
         const { clientX, clientY } = event;
         let x = left;
@@ -37,41 +37,41 @@ const ResizeW = (props) => {
                 x = clientX - _X;
                 w = width + left - x;
                 break;
-            case 5:    
+            case 5:
                 x = clientX - _X;
                 w = width + left - x;
-                if(event.shiftKey){
-                    h = w/width*height;
+                if (event.shiftKey) {
+                    h = w / width * height;
                     y = height + top - h;
-                }else{
+                } else {
                     y = clientY - _Y;
                     h = height + top - y;
                 }
                 break;
             case 6:
                 w = width - left + clientX - _X;
-                if(event.shiftKey){
-                    h = w/width*height;
+                if (event.shiftKey) {
+                    h = w / width * height;
                     y = height + top - h;
-                }else{
+                } else {
                     y = clientY - _Y;
                     h = height + top - y;
-                }               
+                }
                 break;
             case 7:
                 x = clientX - _X;
                 w = width + left - x;
-                if(event.shiftKey){
-                    h = w/width*height;
-                }else{
+                if (event.shiftKey) {
+                    h = w / width * height;
+                } else {
                     y = clientY - _Y;
-                } 
+                }
                 break;
             case 8:
                 w = width - left + clientX - _X;
-                if(event.shiftKey){
-                    h = w/width*height;
-                }else{
+                if (event.shiftKey) {
+                    h = w / width * height;
+                } else {
                     h = height - top + clientY - _Y;
                 }
                 break;
@@ -81,24 +81,24 @@ const ResizeW = (props) => {
         w = w < 0 ? 0 : w;
         h = h < 0 ? 0 : h;
         //x吸附left
-        if( Math.abs(x)<10){
+        if (Math.abs(x) < 10) {
             w += x;
-            x = 0;  
+            x = 0;
         }
         //y吸附top
-        if( Math.abs(y)<10){
+        if (Math.abs(y) < 10) {
             h += y;
             y = 0;
         }
         //x吸附right
-        if( Math.abs(x+w-_w)<10){
-            w = _w-x;
+        if (Math.abs(x + w - _w) < 10) {
+            w = _w - x;
         }
         //x吸附bottom
-        if( Math.abs(y+h-_h)<10){
-            h = _h-y;
+        if (Math.abs(y + h - _h) < 10) {
+            h = _h - y;
         }
-        props.resize({x,y,w,h});
+        props.resize({ x, y, w, h });
     }
 
     const resizeEnd = (ev) => {
@@ -122,11 +122,11 @@ const ResizeW = (props) => {
     )
 }
 
-class View extends PureComponent {
+class EditView extends PureComponent {
 
     static defaultProps = {
         editable: true,
-        allowdrop : true,
+        allowdrop: true,
         className: "",
     }
 
@@ -134,16 +134,16 @@ class View extends PureComponent {
         super(props);
         this.state = {
             editable: props.editable,
-            w:props.style.w,
-            h:props.style.h,
-            x:props.style.x||0,
-            y:props.style.y||0,
-            _x:props.style.x||0,
-            _y:props.style.y||0,
-            isDrag:false,
-            isHover:false,
-            isNodrop:false,
-            isOver:false
+            w: props.style.w,
+            h: props.style.h,
+            x: props.style.x || 0,
+            y: props.style.y || 0,
+            _x: props.style.x || 0,
+            _y: props.style.y || 0,
+            isDrag: false,
+            isHover: false,
+            isNodrop: false,
+            isOver: false
         };
     }
 
@@ -159,7 +159,7 @@ class View extends PureComponent {
 
     mouseout = (ev) => {
         ev.stopPropagation();
-        this.setState({isHover:false});
+        this.setState({ isHover: false });
     }
 
     onMenu = (ev) => {
@@ -183,7 +183,7 @@ class View extends PureComponent {
     }
 
     dragStart = (ev) => {
-        if(ev.target.className==="editview"){
+        if (ev.target.className === "editview") {
             return false;
         }
         const { clientX, clientY } = ev;
@@ -195,9 +195,9 @@ class View extends PureComponent {
         let target = targets[index];
         const { left, top, width, height } = target.getBoundingClientRect();
         if (this.state.editable) {
-            this.setState({w:width,h:height})
+            this.setState({ w: width, h: height })
             ev.stopPropagation();
-        }else{
+        } else {
             return false;
         }
         window.$POSITON = { clientX, clientY };
@@ -207,21 +207,21 @@ class View extends PureComponent {
         let _top = offsetParentBound.top + offsetParent.scrollTop;
         let x = left - _left;
         let y = top - _top;
-        this.start = {x,y};
+        this.start = { x, y };
         const _X = clientX - left
         const _Y = clientY - top;
-        document.onmousemove = (event) => this.drag( event, { _X, _Y, _left, _top });
+        document.onmousemove = (event) => this.drag(event, { _X, _Y, _left, _top });
         document.onmouseup = this.dragEnd;
         return false;
     }
 
-    drag = ( event, { _X, _Y, _left, _top }) => {
+    drag = (event, { _X, _Y, _left, _top }) => {
         event.stopPropagation();
         const { clientX, clientY } = event;
         if (window.$POSITON.clientX === clientX && window.$POSITON.clientY === clientY) {
             return false;
         }
-        this.setState({isDrag:true});
+        this.setState({ isDrag: true });
         //util.addClass(target, 'drag');
         let obj = document.elementsFromPoint(clientX, clientY);
         let overObj = obj[this.findDragTarget(obj) + 1];
@@ -231,57 +231,57 @@ class View extends PureComponent {
                 util.removeClass(this.overObj, 'over');
             }
             this.overObj = overObj;
-        }else{
+        } else {
             return false;
         }
         const { w, h } = this.state;
         const { left, top, width, height } = overObj.getBoundingClientRect();
-        const centX = width*.5 - w*.5;
-        const centY = height*.5 - h*.5;
+        const centX = width * .5 - w * .5;
+        const centY = height * .5 - h * .5;
         //真实坐标
         let _x = clientX - left - _X;
         let _y = clientY - top - _Y;
-        if(overObj.dataset.allowdrop==='true'){
-            this.setState({isNodrop:false});
+        if (overObj.dataset.allowdrop === 'true') {
+            this.setState({ isNodrop: false });
             //util.removeClass(target,'nodrop');
             //x吸附left
-            if( Math.abs(_x)<10){
+            if (Math.abs(_x) < 10) {
                 _x = 0;
             }
             //y吸附top
-            if( Math.abs(_y)<10){
+            if (Math.abs(_y) < 10) {
                 _y = 0;
             }
             //x吸附right
-            if( Math.abs(_x+w-width)<10){
-                _x = width-w;
+            if (Math.abs(_x + w - width) < 10) {
+                _x = width - w;
             }
             //x吸附bottom
-            if( Math.abs(_y+h-height)<10){
-                _y = height-h;
+            if (Math.abs(_y + h - height) < 10) {
+                _y = height - h;
             }
             //居中吸附X
-            if( Math.abs(_x-centX)<10){
+            if (Math.abs(_x - centX) < 10) {
                 _x = centX;
             }
             //居中吸附Y
-            if( Math.abs(_y-centY)<10){
+            if (Math.abs(_y - centY) < 10) {
                 _y = centY;
             }
-        }else{
-            this.setState({isNodrop:true});
+        } else {
+            this.setState({ isNodrop: true });
             //util.addClass(target,'nodrop');
         }
         this.setState({
-            _x:left-_left+_x,
-            _y:top-_top+_y,
-            x:_x,
-            y:_y
+            _x: left - _left + _x,
+            _y: top - _top + _y,
+            x: _x,
+            y: _y
         });
     }
 
     dragEnd = (ev) => {
-        
+
         ev.stopPropagation();
         const { clientX, clientY } = ev;
         document.onmousemove = null;
@@ -289,29 +289,30 @@ class View extends PureComponent {
         if (window.$POSITON.clientX === clientX && window.$POSITON.clientY === clientY) {
             return false;
         } else {
-            this.setState({isDrag:false});
+            this.setState({ isDrag: false });
         }
-        if (this.overObj&&this.overObj.dataset.allowdrop==='true') {
+        if (this.overObj && this.overObj.dataset.allowdrop === 'true') {
             util.removeClass(this.overObj, 'over');
             //console.log(this.overObj)
-            this.props.dragEnd && this.props.dragEnd(this);
+            const { x, y } = this.state;
+            this.props.dragEnd && this.props.dragEnd({ x, y });
         } else {
-            const {x,y} = this.start;
+            const { x, y } = this.start;
             this.setState({
-                _x:x,
-                _y:y,
+                _x: x,
+                _y: y,
                 x,
                 y,
-                isNodrop:false
+                isNodrop: false
             });
-            util.removeClass(this.overObj,'over');
+            util.removeClass(this.overObj, 'over');
         }
     }
 
-    resize = ({x,y,w,h}) => {
+    resize = ({ x, y, w, h }) => {
         this.setState({
-            _x:x,
-            _y:y,
+            _x: x,
+            _y: y,
             x,
             y,
             w,
@@ -320,7 +321,7 @@ class View extends PureComponent {
     }
 
     resizeEnd = () => {
-        this.props.resizeEnd&&this.props.resizeEnd(this);
+        this.props.resizeEnd && this.props.resizeEnd(this);
     }
 
     dragover = (ev) => {
@@ -331,7 +332,7 @@ class View extends PureComponent {
     ondragover = (ev) => {
         ev.stopPropagation();
         const { allowdrop } = this.props;
-        if(allowdrop){
+        if (allowdrop) {
             this.setState({ isOver: true });
             ev.preventDefault();
         }
@@ -341,8 +342,23 @@ class View extends PureComponent {
         this.setState({ isOver: false });
     }
 
-    ondrop = () => {
-        this.setState({ isOver: false });
+    ondrop = (ev) => {
+        ev.stopPropagation();
+        const { allowdrop } = this.props;
+        if (allowdrop) {
+            const source = ev.dataTransfer.getData('source');
+            const { clientX, clientY } = ev;
+            if (source === 'left') {
+                let x = clientX - ev.dataTransfer.getData('x') - this.state.x;
+                let y = clientY - ev.dataTransfer.getData('y') - this.state.y;
+                const type = ev.dataTransfer.getData('type');
+                const {index} = this.props;
+                this.props.addCom&&this.props.addCom({type,x,y,index})
+            }
+            this.setState({ isOver: false });
+            ev.preventDefault();
+        }
+
     }
 
     togglelock = (ev) => {
@@ -361,9 +377,9 @@ class View extends PureComponent {
         }
         const move = () => {
             ev.preventDefault(ev);
-            this.setState({x,y,_x:x,_y:y})
+            this.setState({ x, y, _x: x, _y: y })
         }
-        let {x,y} = this.state;
+        let { x, y } = this.state;
         let step = 1;
         if (ev.shiftKey) {
             step = 10;
@@ -400,41 +416,42 @@ class View extends PureComponent {
 
     hover = (ev) => {
         ev.stopPropagation();
-        this.setState({isHover:true});
+        this.setState({ isHover: true });
     }
 
     onClick = (ev) => {
         //console.log(this)
         ev.stopPropagation();
-        this.props.onClick&&this.props.onClick(this);
+        this.props.onClick && this.props.onClick(this);
     }
 
     onFocus = (ev) => {
         ev.stopPropagation();
-        this.props.onFocus&&this.props.onFocus(this);
+        this.props.onFocus && this.props.onFocus(this);
     }
 
     onDoubleClick = (ev) => {
         ev.stopPropagation();
-        this.props.onDoubleClick&&this.props.onDoubleClick(ev);
+        this.props.onDoubleClick && this.props.onDoubleClick(ev);
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.editable!==this.state.editable){
-            this.setState({editable:nextProps.editable});
+        if (nextProps.editable !== this.props.editable) {
+            console.log(555)
+            this.setState({ editable: nextProps.editable });
         }
-        if(nextProps.style.x!==this.state.x){
-            this.setState({x:nextProps.style.x,_x:nextProps.style.x});
-        }
-        if(nextProps.style.y!==this.state.y){
-            this.setState({y:nextProps.style.y,_y:nextProps.style.y});
-        }
-        if(nextProps.style.w!==this.state.w){
-            this.setState({w:nextProps.style.w});
-        }
-        if(nextProps.style.h!==this.state.h){
-            this.setState({h:nextProps.style.h});
-        }
+        // if(nextProps.style.x!==this.state.x){
+        //     this.setState({x:nextProps.style.x,_x:nextProps.style.x});
+        // }
+        // if(nextProps.style.y!==this.state.y){
+        //     this.setState({y:nextProps.style.y,_y:nextProps.style.y});
+        // }
+        // if(nextProps.style.w!==this.state.w){
+        //     this.setState({w:nextProps.style.w});
+        // }
+        // if(nextProps.style.h!==this.state.h){
+        //     this.setState({h:nextProps.style.h});
+        // }
     }
 
     componentDidMount() {
@@ -447,10 +464,10 @@ class View extends PureComponent {
     }
 
     render() {
-        const { className, allowdrop } = this.props;
-        const { editable,w,h,x,y,_x,_y,isDrag,isHover,isNodrop,isOver } = this.state;
-        const sizeW = parseInt(w,10) >= 0 ? { width: w } : {};
-        const sizeH = parseInt(h,10) >= 0 ? { height: h } : {};
+        const { className, allowdrop, index } = this.props;
+        const { editable, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
+        const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
+        const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
         return (
             <div
                 onClick={this.onClick}
@@ -458,6 +475,7 @@ class View extends PureComponent {
                 onContextMenu={this.onMenu}
                 style={{ transform: `translate(${_x}px,${_y}px)`, ...sizeW, ...sizeH }}
                 tabIndex={0}
+                data-index={index}
                 onMouseOver={this.hover}
                 onKeyDown={this.keymove}
                 onKeyUp={this.keymoveEnd}
@@ -479,11 +497,11 @@ class View extends PureComponent {
                 onMouseDown={this.dragStart}
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
-                {editable&&<ResizeW res={{x,y,w,h}} resize={this.resize} resizeEnd={this.resizeEnd} />}
+                {editable && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
                 {this.renderChild()}
             </div>
         );
     }
 }
 
-export default View;
+export default EditView;
