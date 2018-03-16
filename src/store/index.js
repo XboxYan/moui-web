@@ -1,10 +1,12 @@
 import React, { PureComponent } from 'react';
+import Immutable from 'immutable';
+import {FOCUS} from '../util/action';
 
 const initialState = {
     color: "blue",
     //layout: new ComProps(View,[0,0,600,400])
     //layout[0].child[0].child[0]
-    layout:[
+    layout:Immutable.fromJS([
         {
             type:'View',
             id:'0',
@@ -72,7 +74,8 @@ const initialState = {
                 }
             ]
         }
-    ]
+    ]),
+    current:null
 };
 
 const StoreContext = React.createContext({
@@ -86,14 +89,20 @@ export default class StoreProvider extends PureComponent {
     updata = (layout) => {
         this.setState({layout})
     }
+    focus = (index) => {
+        const {layout} = this.state;
+        this.setState({current:FOCUS(layout,index).toJS()});
+    }
     render() {
-        const {color,layout} = this.state;
+        const {color,layout,current} = this.state;
         return (
             <StoreContext.Provider
                 value={{
                     layout: layout,
                     color: color,
-                    updata: this.updata
+                    updata: this.updata,
+                    current:current,
+                    focus:this.focus
                 }}
             >
                 {this.props.children}

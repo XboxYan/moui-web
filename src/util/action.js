@@ -1,55 +1,53 @@
 import Immutable from 'immutable';
 
 const paseTree = (path) => {
-    //tree-0-0 => [0,child,0]   tree-child-0-child-0
     return path.replace(/-/g, '-child-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
-    //[tree,'child',0,'child',0] => [0,'child',0]
 }
 
 const ADD = (layout, index, type, { x, y }) => {
-    const O = Immutable.fromJS(layout);
+    const O = layout;
     const tree = paseTree(index);
     const Com = Immutable.fromJS({
         type, style: { x, y }, props: {}, child: []
     })
     const $O = O.updateIn([...tree, 'child'], value => value.push(Com));
-    return $O.toJS()
+    return $O
 }
 
-const CHANGE = (layout, index, value, path) => {
-    const O = Immutable.fromJS(layout);
+const FOCUS = (layout, index) => {
+    const O = layout;
     const tree = paseTree(index);
-    const $O = O.setIn([...tree, ...path], value);
-    return $O.toJS()
+    const $O = O.getIn(tree);
+    return $O;
 }
 
-const MOVE = (layout, { x, y }, target, index, path) => {
-    const O = Immutable.fromJS(layout);
-    const target_tree = paseTree(target);
+const CHANGE = (layout, index, key_value, path) => {
+    const O = layout;
+    const tree = paseTree(index);
+    const $O = O.updateIn([...tree, ...path],value=>value.merge(Immutable.fromJS(key_value)))
+    return $O
+}
+
+const MOVE = (layout, pos, target, index, path) => {
+    const O = layout; 
     const tree = paseTree(index);
     const current = O.getIn(tree);
-    const $current = current.setIn([...path, 'x'], x).setIn([...path, 'y'], y)
+    const $current = current.updateIn(path,value=>value.merge(Immutable.fromJS(pos)));
     if (index.slice(0, -2) === target) {
-        const $P = O.setIn(index, $current);
-        return $P.toJS()
+        const $P = O.setIn(tree, $current);
+        return $P
     } else {
-        console.log(target, index)
-
-        // current.setIn([...path,'x'],x);
-        // current.setIn([...path,'y'],y);
-
-        const $O = O.removeIn(tree);
-
-        console.log($O.getIn([...target_tree, 'child']).toJS())
-
-        const $P = $O.updateIn([...target_tree, 'child'], value => value.push($current));
-
-        console.log($current.toJS())
-
-        return $P.toJS()
+        const target_tree = paseTree(target);
+        const $O = O.setIn(tree, null);
+        const e = $O.getIn([...target_tree, 'child']).indexOf(null);
+        if (e < 0) {
+            const $P = $O.updateIn([...target_tree, 'child'], value => value.push($current));
+            return $P
+        } else {
+            const $P = $O.setIn([...target_tree, 'child', e], $current);
+            return $P
+        }
     }
-
-
 }
 
-export { ADD, CHANGE, MOVE };
+export { ADD, CHANGE, MOVE, FOCUS };

@@ -36,8 +36,8 @@ class ComItem extends PureComponent {
     const { left, top } = ev.target.getBoundingClientRect();
     ev.dataTransfer.setData("source",'left');
     ev.dataTransfer.setData("type",item.type);
-    ev.dataTransfer.setData("x",clientX - left + 200);
-    ev.dataTransfer.setData("y",clientY - top + 65);
+    ev.dataTransfer.setData("x",clientX - left);
+    ev.dataTransfer.setData("y",clientY - top);
   }
   render() {
     const { item } = this.props;

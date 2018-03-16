@@ -321,7 +321,8 @@ class EditView extends PureComponent {
     }
 
     resizeEnd = () => {
-        this.props.resizeEnd && this.props.resizeEnd(this);
+        const {x,y,w,h} = this.state;
+        this.props.onChange && this.props.onChange({x,y,w,h});
     }
 
     dragover = (ev) => {
@@ -349,8 +350,9 @@ class EditView extends PureComponent {
             const source = ev.dataTransfer.getData('source');
             const { clientX, clientY } = ev;
             if (source === 'left') {
-                let x = clientX - ev.dataTransfer.getData('x') - this.state.x;
-                let y = clientY - ev.dataTransfer.getData('y') - this.state.y;
+                const { left, top } = ev.target.getBoundingClientRect();
+                let x = clientX - ev.dataTransfer.getData('x') - left;
+                let y = clientY - ev.dataTransfer.getData('y') - top;
                 const type = ev.dataTransfer.getData('type');
                 const {index} = this.props;
                 this.props.addCom&&this.props.addCom({type,x,y,index})
@@ -410,7 +412,8 @@ class EditView extends PureComponent {
         ev.stopPropagation();
         ev.preventDefault();
         if (ev.keyCode === 37 || ev.keyCode === 38 || ev.keyCode === 39 || ev.keyCode === 40) {
-            this.props.dragEnd && this.props.dragEnd(this);
+            const {x,y} = this.state;
+            this.props.onChange && this.props.onChange({x,y});
         }
     }
 
@@ -427,7 +430,7 @@ class EditView extends PureComponent {
 
     onFocus = (ev) => {
         ev.stopPropagation();
-        this.props.onFocus && this.props.onFocus(this);
+        this.props.onFocus && this.props.onFocus();
     }
 
     onDoubleClick = (ev) => {
@@ -459,22 +462,41 @@ class EditView extends PureComponent {
         //document.addEventListener('mouseover', this.hover, false);
     }
 
+    paseStyle = (style) => {
+        let STYLE = {}
+        for ( let name in style){
+            switch (name) {
+                case 'w':
+                    STYLE['width'] = style[name];
+                    break;
+                case 'h':
+                    STYLE['height'] = style[name];
+                    break;
+                default:
+                    STYLE[name] = style[name];
+                    break;
+            }
+            
+        }
+        return STYLE;
+    }
+
     renderChild = () => {
         return this.props.children;
     }
 
     render() {
-        const { className, allowdrop, index } = this.props;
+        const { className, allowdrop, index,style } = this.props;
         const { editable, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
-        //const {x,y,w,h} = this.props;
         const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
+        const _style = this.paseStyle(style);
         return (
             <div
                 onClick={this.onClick}
                 onDoubleClick={this.onDoubleClick}
                 onContextMenu={this.onMenu}
-                style={{ transform: `translate(${_x}px,${_y}px)`, ...sizeW, ...sizeH }}
+                style={{ ..._style,transform: `translate(${_x}px,${_y}px)`, ...sizeW, ...sizeH }}
                 tabIndex={0}
                 data-index={index}
                 onMouseOver={this.hover}

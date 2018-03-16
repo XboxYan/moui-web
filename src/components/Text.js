@@ -4,8 +4,10 @@ import {StoreContext} from '../store';
 import { Input } from 'antd';
 
 const defaultProps = {
-    text: '默认文本',
-    multiline: true
+    props:{
+        text: '默认文本',
+        multiline: true
+    }
 }
 
 export default class Text extends PureComponent {
@@ -29,25 +31,15 @@ export default class Text extends PureComponent {
         this.setState({
             contentEditable: false,
         });
-        const {index} = this.props;
-        this.props.onChange && this.props.onChange(value,index,['props','text']);
-    }
-
-    onFocus = () => {
-        this.props.onFocus&&this.props.onFocus(this);  
-    }
-
-    dragEnd = ({x,y},target) => {
-        const {index} = this.props;
-        this.props.dragEnd&&this.props.dragEnd({x,y},target,index,['style']);  
+        this.props.onChange && this.props.onChange({text:value},['props']);
     }
 
     render() {
         const { contentEditable } = this.state;
-        const {text,multiline} = {...defaultProps,...this.props.props};
+        const {text,multiline} = {...defaultProps.props,...this.props.props};
         return (
 
-            <EditView {...this.props} allowdrop={false} dragEnd={this.dragEnd} onFocus={this.onFocus} onDoubleClick={this.onDoubleClick} editable={!contentEditable}>
+            <EditView {...this.props} allowdrop={false} onDoubleClick={this.onDoubleClick} editable={!contentEditable}>
                 {
                     contentEditable ?
                         <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />

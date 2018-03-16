@@ -18,7 +18,6 @@ export default class Index extends PureComponent {
   }
 
   render() {
-    console.log(11)
     return (
       <StoreProvider>
         <Layout>
@@ -46,13 +45,11 @@ export default class Index extends PureComponent {
             </Footer>
             </Layout>
             <Sider width={250}>
-              <PropsList />
               <StoreContext.Consumer>
-                {context => (
-                  <Button onClick={context.dispatch}>Context 测试</Button>
-                )}
+                {
+                  context => <PropsList store={context} />
+                }
               </StoreContext.Consumer>
-              <Button onClick={this.onClick}>Layout 测试</Button>
             </Sider>
           </Layout>
         </Layout>
