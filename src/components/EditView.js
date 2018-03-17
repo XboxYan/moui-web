@@ -64,7 +64,7 @@ const ResizeW = (props) => {
                 if (event.shiftKey) {
                     h = w / width * height;
                 } else {
-                    y = clientY - _Y;
+                    h = height - top + clientY - _Y;
                 }
                 break;
             case 8:
