@@ -44,3 +44,7 @@ img{vertical-align: middle;outline: 0;border: 0}
 .card-container > .ant-tabs-card > .ant-tabs-bar {border-color: #fff;}
 .card-container > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab { border-color: transparent; background: transparent;}
 .card-container > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {border-color: #fff;background: #fff;}
+.divider{ display: flex; align-items: center;}
+.divider span{ padding: 0 10px; font-size: 14px; color: rgba(0, 0, 0, 0.85);}
+.divider::before{ content: ''; height: 1px; background: #e8e8e8; width: 20px;}
+.divider::after{ content: ''; height: 1px; background: #e8e8e8; flex: 1;}
