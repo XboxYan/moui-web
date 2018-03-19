@@ -440,21 +440,20 @@ class EditView extends PureComponent {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.editable !== this.props.editable) {
-            console.log(555)
             this.setState({ editable: nextProps.editable });
         }
-        // if(nextProps.style.x!==this.state.x){
-        //     this.setState({x:nextProps.style.x,_x:nextProps.style.x});
-        // }
-        // if(nextProps.style.y!==this.state.y){
-        //     this.setState({y:nextProps.style.y,_y:nextProps.style.y});
-        // }
-        // if(nextProps.style.w!==this.state.w){
-        //     this.setState({w:nextProps.style.w});
-        // }
-        // if(nextProps.style.h!==this.state.h){
-        //     this.setState({h:nextProps.style.h});
-        // }
+        if(nextProps.style.x!==this.props.style.x){
+            this.setState({x:nextProps.style.x,_x:nextProps.style.x});
+        }
+        if(nextProps.style.y!==this.props.style.y){
+            this.setState({y:nextProps.style.y,_y:nextProps.style.y});
+        }
+        if(nextProps.style.w!==this.props.style.w){
+            this.setState({w:nextProps.style.w});
+        }
+        if(nextProps.style.h!==this.props.style.h){
+            this.setState({h:nextProps.style.h});
+        }
     }
 
     componentDidMount() {

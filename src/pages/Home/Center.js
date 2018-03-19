@@ -26,8 +26,8 @@ export default class Center extends PureComponent {
 
     dragEnd = (index) => (pos, target) => {
         const { layout, updata } = this.props.store;
-        const _layout = MOVE(layout, pos, target, index, ['style']);
-        updata(_layout);
+        const [_layout,focusindex] = MOVE(layout, pos, target, index, ['style']);
+        updata(_layout,focusindex);
     }
 
     addCom = ({ type, x, y, index }) => {
@@ -59,7 +59,7 @@ export default class Center extends PureComponent {
                 onChange={this.onChange(index)}
                 index={index}
                 addCom={this.addCom}
-                onFocus={this.onFocus(key)}
+                onFocus={this.onFocus(index)}
                 onDrop={this.onDrop}
                 key={index}
                 style={item.style}

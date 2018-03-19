@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Layout, Icon, Button } from 'antd';
+import { Layout, Icon } from 'antd';
 import ProjectList from './ProjectList';
 import CompoList from './CompoList';
 import PropsList from './PropsList';

@@ -5,6 +5,7 @@
   "dependencies": {
     "antd": "^3.2.3",
     "immutable": "^3.8.2",
+    "rc-color-picker": "^1.2.6",
     "react": "next",
     "react-dom": "next",
     "react-keeper": "^2.1.7",

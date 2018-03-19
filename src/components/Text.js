@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import EditView from './EditView';
-import {StoreContext} from '../store';
 import { Input } from 'antd';
 
 const defaultProps = {
@@ -44,12 +43,7 @@ export default class Text extends PureComponent {
                     contentEditable ?
                         <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />
                         :
-                        <StoreContext.Consumer>
-                            {context => (
-                                <div style={{ color: context.color }} className={multiline ? '' : 'els'}>{text}</div>
-                            )}
-                        </StoreContext.Consumer>
-
+                        <div className={multiline ? '' : 'els'}>{text}</div>
                 }
             </EditView>
         );
