@@ -18,13 +18,28 @@ export default class PropsPane extends PureComponent {
         updata(_layout);
     }
 
+    toAlpha = (alpha) => {
+        if(alpha===100){
+            return "";
+        }
+        let hex = (~~(alpha*2.25)).toString(16);
+        if(hex<10){
+            hex = "0"+hex;
+        }
+        return hex;
+    }
+
     render() {
         const { style: {
             x = 0,
             y = 0,
             w,
             h,
-            backgroundColor = '#fff'
+            backgroundColor = '#fff',
+            opacity = 1,
+            borderWidth = 0,
+            borderStyle = 'solid',
+            borderColor = '#000'
         }, type } = this.props.store.current;
         return (
             <div className="pane">
@@ -52,9 +67,9 @@ export default class PropsPane extends PureComponent {
                             <ColorPicker
                                 className="colorPicker"
                                 animation="slide-up"
-                                enableAlpha={false}
+                                //enableAlpha={false}
                                 color={backgroundColor}
-                                onChange={(colors) => this.onChange({ backgroundColor: colors.color })}
+                                onChange={(colors) => this.onChange({ backgroundColor: colors.color + this.toAlpha(colors.alpha) })}
                             />
                             <Checkbox />
                         </div>
@@ -64,24 +79,24 @@ export default class PropsPane extends PureComponent {
                             <ColorPicker
                                 className="colorPicker"
                                 animation="slide-up"
-                                enableAlpha={false}
-                                color={backgroundColor}
-                                onChange={(colors) => this.onChange({ backgroundColor: colors.color })}
+                                //enableAlpha={false}
+                                color={borderColor}
+                                onChange={(colors) => this.onChange({ borderColor: colors.color + this.toAlpha(colors.alpha) })}
                             />
                             <InputGroup compact className="inputGroup">
-                                <Select defaultValue="solid" size="small">
-                                    <Option value="solid">——</Option>
-                                    <Option value="dashed">- - - </Option>
-                                    <Option value="dotted">……</Option>
+                                <Select value={borderStyle} size="small"  onChange={(value) => this.onChange({ borderStyle: value })}>
+                                    <Option value="solid">———————</Option>
+                                    <Option value="dashed">-------</Option>
+                                    <Option value="dotted">·······</Option>
                                 </Select>
-                                <InputNumber size="small" value={0} />
+                                <InputNumber size="small" min={0} value={borderWidth} onChange={(value) => this.onChange({ borderWidth: value })} />
                             </InputGroup>
                         </div>
                     </FormItem>
                     <FormItem label="透明度">
                         <div className="form_pane_row">
-                            <Slider style={{flex:3,marginRight:10}}/>
-                            <InputNumber style={{flex:1}} size="small" value={0} />
+                            <Slider style={{flex:2,marginRight:10}} value={opacity} min={0} max={1} step={.1}  onChange={(value) => this.onChange({ opacity: value })} />
+                            <InputNumber style={{flex:1}} size="small" min={0} max={1} step={.1} value={opacity}  onChange={(value) => this.onChange({ opacity: value })} />
                         </div>
                     </FormItem>
                 </Form>

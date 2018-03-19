@@ -1,4 +1,4 @@
-.view{position: absolute;user-select: none;}
+.view{position: absolute; box-sizing: border-box; user-select: none;}
 .view.filter{ pointer-events: none;}
 .view.filter>.view{ pointer-events: all;}
 .view::before,.view::after{ white-space: pre; position: absolute; font-size: 12px; line-height: 16px; color: #fff; background: rgba(0,0,0,.8); border-radius: 3px; padding: 3px 5px;}

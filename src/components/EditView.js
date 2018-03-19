@@ -133,7 +133,7 @@ class EditView extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            editable: props.editable,
+            editable: props.index !== 'View-0' && props.editable,
             w: props.style.w,
             h: props.style.h,
             x: props.style.x || 0,
@@ -224,7 +224,7 @@ class EditView extends PureComponent {
         this.setState({ isDrag: true });
         //util.addClass(target, 'drag');
         let obj = document.elementsFromPoint(clientX, clientY);
-        let overObj = obj[this.findDragTarget(obj) + 1];
+        let overObj = obj[this.findDragTarget(obj) + 2];
         if (overObj) {
             util.addClass(overObj, 'over');
             if (this.overObj && this.overObj !== overObj) {
@@ -465,6 +465,10 @@ class EditView extends PureComponent {
         let STYLE = {}
         for ( let name in style){
             switch (name) {
+                case 'x':
+                    break;
+                case 'y':
+                    break;
                 case 'w':
                     STYLE['width'] = style[name];
                     break;
@@ -495,7 +499,7 @@ class EditView extends PureComponent {
                 onClick={this.onClick}
                 onDoubleClick={this.onDoubleClick}
                 onContextMenu={this.onMenu}
-                style={{ ..._style,transform: `translate(${_x}px,${_y}px)`, ...sizeW, ...sizeH }}
+                style={{ transform: `translate(${_x}px,${_y}px)`, ...sizeW, ...sizeH }}
                 tabIndex={0}
                 data-index={index}
                 onMouseOver={this.hover}
@@ -520,7 +524,9 @@ class EditView extends PureComponent {
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
                 {editable && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
-                {this.renderChild()}
+                <div style={{..._style,width:'100%',height:'100%'}}>
+                    {this.renderChild()}
+                </div>
             </div>
         );
     }
