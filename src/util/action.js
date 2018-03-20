@@ -5,7 +5,6 @@ const paseTree = (path) => {
     //View-0-1~0
     //View-child-0-child-1-item-0
     //[0,child,1,item,0]
-    console.log(path.replace(/-/g, '-child-').replace(/~/g, '-item-'))
     return path.replace(/-/g, '-child-').replace(/~/g, '-item-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
 }
 
@@ -16,7 +15,7 @@ const ADD = (layout, index, type, { x, y }) => {
         type, 
         style: { ...defaultProps[type].style,x, y }, 
         props: {...defaultProps[type].props}, 
-        item: {...defaultProps[type].item},
+        item: [defaultProps[type].item],
         child: []
     })
     const $O = O.updateIn([...tree, 'child'], value => value.push(Com));

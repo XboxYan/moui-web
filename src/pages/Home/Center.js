@@ -45,19 +45,18 @@ export default class Center extends PureComponent {
         updata(_layout);
     }
 
-    loop = (data, m = '') => data.map((item, i) => {
+    loop = (data, m = '',s='-') => data.map((item, i) => {
         if (!item) {
             return null
         }
         const Tag = type[item.type];
-        let key = m + '-' + i;
+        let key = m + s + i;
         let child = null;
         if(item.type==='ListView'){
-            key = m + '~' + i;
-            child = this.loop([item.item], key)
+            child = this.loop(item.item, key,'~');
         }else{
             if (item.child && item.child.length) {
-                child = this.loop(item.child, key)
+                child = this.loop(item.child, key);
             }
         }   
         const index = item.type + key;

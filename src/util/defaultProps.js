@@ -52,6 +52,7 @@ export default {
                 editable: false,
                 allowdrop: true,
             },
+            child: []
         }
     }
 }
