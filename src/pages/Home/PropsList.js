@@ -13,8 +13,7 @@ export default class PropsList extends PureComponent {
         }
         return (
             <div className="card-container">
-                <h2>{current.type}</h2>
-                <Tabs type="card">
+                <Tabs type="card" className="tab-container">
                     <TabPane tab="属性" key="1"><PropsPane {...this.props} /></TabPane>
                     <TabPane tab="样式" key="2"><StylesPane {...this.props} /></TabPane>
                 </Tabs>

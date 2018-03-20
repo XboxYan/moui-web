@@ -2,12 +2,14 @@ import React, { PureComponent } from 'react';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
+import List from '../../components/List';
 import { ADD, CHANGE, MOVE } from '../../util/action';
 
 const type = {
     'View': View,
     'Text': Text,
     'Image': Image,
+    'List': List,
 }
 
 export default class Center extends PureComponent {
@@ -21,6 +23,7 @@ export default class Center extends PureComponent {
 
     onFocus = (index) => () => {
         const { focus } = this.props.store;
+        console.log(index)
         focus(index);
     }
 
@@ -61,6 +64,7 @@ export default class Center extends PureComponent {
                 addCom={this.addCom}
                 onFocus={this.onFocus(index)}
                 onDrop={this.onDrop}
+                onSet={this.onChange(index)}
                 key={index}
                 style={item.style}
                 props={item.props}>

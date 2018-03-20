@@ -15,7 +15,7 @@ export default class Image extends PureComponent {
     }
 
     render() {
-        const {alt,src} = {...defaultProps.props,...this.props.props};
+        const {alt,src,editable} = {...defaultProps.props,...this.props.props};
         return (
             <EditView {...this.props} allowdrop={false}>
                 <img draggable={false} alt={alt} src={src} />

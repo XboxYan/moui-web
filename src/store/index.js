@@ -14,7 +14,7 @@ const initialState = {
                 h:720,
             },
             props:{
-                //editable:false
+                editable:false
             },
             child:[
                 {
@@ -24,6 +24,7 @@ const initialState = {
                         w:200,
                         h:200
                     },
+                    props:{},
                     child:[
                         {
                             type:'Image',

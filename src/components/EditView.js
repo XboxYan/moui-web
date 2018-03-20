@@ -133,7 +133,7 @@ class EditView extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            editable: props.index !== 'View-0' && props.editable,
+            editable: props.props.editable===undefined?true:false,
             w: props.style.w,
             h: props.style.h,
             x: props.style.x || 0,
@@ -367,7 +367,7 @@ class EditView extends PureComponent {
         ev.stopPropagation();
         let { editable } = this.state;
         this.setState({ editable: !editable });
-        this.props.togglelock && this.props.togglelock(this);
+        this.props.onSet && this.props.onSet({editable: !editable},['props']);
     }
 
     //键盘移动
@@ -439,8 +439,8 @@ class EditView extends PureComponent {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.editable !== this.props.editable) {
-            this.setState({ editable: nextProps.editable });
+        if (nextProps.props.editable !== this.props.props.editable) {
+            this.setState({ editable: nextProps.props.editable });
         }
         if(nextProps.style.x!==this.props.style.x){
             this.setState({x:nextProps.style.x,_x:nextProps.style.x});
@@ -490,7 +490,7 @@ class EditView extends PureComponent {
 
     render() {
         const { className, allowdrop, index,style } = this.props;
-        const { editable, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
+        const { editable=true, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
         const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
         const _style = this.paseStyle(style);
@@ -524,7 +524,7 @@ class EditView extends PureComponent {
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
                 {editable && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
-                <div style={{..._style,width:'100%',height:'100%'}}>
+                <div style={{overflow:'hidden',..._style,width:'100%',height:'100%'}}>
                     {this.renderChild()}
                 </div>
             </div>

@@ -22,7 +22,7 @@ export default class Text extends PureComponent {
 
     onDoubleClick = () => {
         this.setState({ contentEditable: true });
-
+        this.props.onChange && this.props.onChange({editable: false},['props']);
     }
 
     onBlur = (ev) => {
@@ -30,15 +30,16 @@ export default class Text extends PureComponent {
         this.setState({
             contentEditable: false,
         });
-        this.props.onChange && this.props.onChange({text:value},['props']);
+        this.props.onChange && this.props.onChange({text:value,editable:true},['props']);
     }
 
     render() {
         const { contentEditable } = this.state;
         const {text,multiline} = {...defaultProps.props,...this.props.props};
+        const style = {...this.props.style,...{overflow:'visible'}}
         return (
 
-            <EditView {...this.props} allowdrop={false} onDoubleClick={this.onDoubleClick} editable={!contentEditable}>
+            <EditView {...this.props} style={style} allowdrop={false} onDoubleClick={this.onDoubleClick}>
                 {
                     contentEditable ?
                         <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />
