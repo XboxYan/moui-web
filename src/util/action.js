@@ -3,8 +3,9 @@ import defaultProps from './defaultProps';
 
 const paseTree = (path) => {
     //View-0-1~0
+    //View-child-0-child-1-item-0
     //[0,child,1,item,0]
-
+    console.log(path.replace(/-/g, '-child-').replace(/~/g, '-item-'))
     return path.replace(/-/g, '-child-').replace(/~/g, '-item-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
 }
 
