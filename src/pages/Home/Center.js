@@ -2,14 +2,14 @@ import React, { PureComponent } from 'react';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
-import List from '../../components/List';
+import ListView from '../../components/ListView';
 import { ADD, CHANGE, MOVE } from '../../util/action';
 
 const type = {
     'View': View,
     'Text': Text,
     'Image': Image,
-    'List': List,
+    'ListView': ListView,
 }
 
 export default class Center extends PureComponent {
@@ -50,11 +50,16 @@ export default class Center extends PureComponent {
             return null
         }
         const Tag = type[item.type];
-        const key = m + '-' + i;
+        let key = m + '-' + i;
         let child = null;
-        if (item.child && item.child.length) {
-            child = this.loop(item.child, key)
-        }
+        if(item.type==='ListView'){
+            key = m + '~' + i;
+            child = this.loop([item.item], key)
+        }else{
+            if (item.child && item.child.length) {
+                child = this.loop(item.child, key)
+            }
+        }   
         const index = item.type + key;
         return (
             <Tag
@@ -74,6 +79,7 @@ export default class Center extends PureComponent {
     });
     render() {
         const { layout } = this.props.store;
+        console.log(layout.toJS())
         return this.loop(layout.toJS());
     }
 }

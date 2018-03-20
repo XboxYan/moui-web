@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Row, Col, Radio, Input, Slider, InputNumber, Checkbox, Button, Icon, Select } from 'antd';
+import { Form, Row, Col, Radio, Input, Slider, InputNumber, Checkbox, Button, Select } from 'antd';
 import ColorPicker from 'rc-color-picker';
 import { CHANGE } from '../../util/action';
 const FormItem = Form.Item;
@@ -57,7 +57,7 @@ export default class PropsPane extends PureComponent {
             textDecoration = 'unset'
         },
         props: {
-            editable=true
+            editable
         }
      } = this.props.store.current;
         return (

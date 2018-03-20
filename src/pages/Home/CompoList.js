@@ -22,7 +22,7 @@ const baseCom = [
 
 const expCom = [
   {
-    type: 'List',
+    type: 'ListView',
     name: '列表',
     ico: 'bars'
   },

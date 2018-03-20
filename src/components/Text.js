@@ -2,17 +2,8 @@ import React, { PureComponent } from 'react';
 import EditView from './EditView';
 import { Input } from 'antd';
 
-const defaultProps = {
-    props:{
-        text: '默认文本',
-        multiline: true
-    }
-}
-
 export default class Text extends PureComponent {
-    static defaultProps = {
-        ...defaultProps
-    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -35,11 +26,10 @@ export default class Text extends PureComponent {
 
     render() {
         const { contentEditable } = this.state;
-        const {text,multiline} = {...defaultProps.props,...this.props.props};
-        const style = {...this.props.style,...{overflow:'visible'}}
+        const {text,multiline} = this.props.props;
         return (
 
-            <EditView {...this.props} style={style} allowdrop={false} onDoubleClick={this.onDoubleClick}>
+            <EditView {...this.props} onDoubleClick={this.onDoubleClick}>
                 {
                     contentEditable ?
                         <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />

@@ -1,14 +1,22 @@
 import Immutable from 'immutable';
+import defaultProps from './defaultProps';
 
 const paseTree = (path) => {
-    return path.replace(/-/g, '-child-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
+    //View-0-1~0
+    //[0,child,1,item,0]
+
+    return path.replace(/-/g, '-child-').replace(/~/g, '-item-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
 }
 
 const ADD = (layout, index, type, { x, y }) => {
     const O = layout;
     const tree = paseTree(index);
     const Com = Immutable.fromJS({
-        type, style: { x, y }, props: {}, child: []
+        type, 
+        style: { ...defaultProps[type].style,x, y }, 
+        props: {...defaultProps[type].props}, 
+        item: {...defaultProps[type].item},
+        child: []
     })
     const $O = O.updateIn([...tree, 'child'], value => value.push(Com));
     return $O
@@ -17,6 +25,7 @@ const ADD = (layout, index, type, { x, y }) => {
 const FOCUS = (layout, index) => {
     const O = layout;
     const tree = paseTree(index);
+    console.log(tree)
     const $O = O.getIn(tree);
     return $O;
 }

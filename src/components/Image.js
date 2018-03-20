@@ -1,23 +1,12 @@
 import React, { PureComponent } from 'react';
 import EditView from './EditView';
-import src from '../img/default_img.png';
-
-const defaultProps = {
-    props:{
-        alt: '',
-        src: src
-    }
-}
 
 export default class Image extends PureComponent {
-    static defaultProps = {
-        ...defaultProps
-    }
 
     render() {
-        const {alt,src,editable} = {...defaultProps.props,...this.props.props};
+        const {alt,src} = this.props.props;
         return (
-            <EditView {...this.props} allowdrop={false}>
+            <EditView {...this.props}>
                 <img draggable={false} alt={alt} src={src} />
             </EditView>
         );

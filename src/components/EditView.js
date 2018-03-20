@@ -133,7 +133,7 @@ class EditView extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            editable: props.props.editable===undefined?true:false,
+            editable: props.props.editable,
             w: props.style.w,
             h: props.style.h,
             x: props.style.x || 0,
@@ -332,7 +332,7 @@ class EditView extends PureComponent {
 
     ondragover = (ev) => {
         ev.stopPropagation();
-        const { allowdrop } = this.props;
+        const { props:{allowdrop} } = this.props;
         if (allowdrop) {
             this.setState({ isOver: true });
             ev.preventDefault();
@@ -345,7 +345,7 @@ class EditView extends PureComponent {
 
     ondrop = (ev) => {
         ev.stopPropagation();
-        const { allowdrop } = this.props;
+        const { props:{allowdrop} } = this.props;
         if (allowdrop) {
             const source = ev.dataTransfer.getData('source');
             const { clientX, clientY } = ev;
@@ -489,7 +489,7 @@ class EditView extends PureComponent {
     }
 
     render() {
-        const { className, allowdrop, index,style } = this.props;
+        const { className, props:{allowdrop}, index,style } = this.props;
         const { editable=true, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
         const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
@@ -524,7 +524,7 @@ class EditView extends PureComponent {
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
                 {editable && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
-                <div style={{overflow:'hidden',..._style,width:'100%',height:'100%'}}>
+                <div style={{..._style,width:'100%',height:'100%'}}>
                     {this.renderChild()}
                 </div>
             </div>
