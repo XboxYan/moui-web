@@ -15,7 +15,8 @@ const ADD = (layout, index, type, { x, y }) => {
         type, 
         style: { ...defaultProps[type].style,x, y }, 
         props: {...defaultProps[type].props}, 
-        item: [defaultProps[type].item],
+        item: defaultProps[type].item?[defaultProps[type].item]:null,
+        datasource: defaultProps[type].datasource||null,
         child: []
     })
     const $O = O.updateIn([...tree, 'child'], value => value.push(Com));

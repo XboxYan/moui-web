@@ -73,3 +73,6 @@ img{vertical-align: middle;outline: 0;border: 0}
 .font-bold[data-checked=true],.font-italic[data-checked=true]{ background: #ccc;}
 .font-bold:focus,.font-italic:focus{ border-color: none; color: initial}
 .url-preview{ padding:5px 10px; background: #f2f4f5; white-space: normal; word-break: break-word;}
+.data-params input{ min-width: auto;}
+.data-params .ant-input-group-wrapper{ margin-right: 10px; }
+.form_pane>.ant-btn{ margin-right: 10px;}

@@ -10,10 +10,7 @@ export default {
             allowdrop:true,
             editable:true
         },
-        datasource:{
-            
-        }
-
+        datasource:{}
     },
     'Image':{
         props:{
@@ -56,6 +53,7 @@ export default {
                 allowdrop: true,
             },
             child: []
-        }
+        },
+        datasource:{}
     }
 }
