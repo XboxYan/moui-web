@@ -241,7 +241,8 @@ class EditView extends PureComponent {
         //真实坐标
         let _x = clientX - left - _X;
         let _y = clientY - top - _Y;
-        if (overObj.dataset.allowdrop === 'true') {
+        const {innerView} = this.props;
+        if (overObj.dataset.allowdrop === 'true' && !innerView) {
             this.setState({ isNodrop: false });
             //util.removeClass(target,'nodrop');
             //x吸附left
@@ -281,7 +282,6 @@ class EditView extends PureComponent {
     }
 
     dragEnd = (ev) => {
-
         ev.stopPropagation();
         const { clientX, clientY } = ev;
         document.onmousemove = null;
@@ -291,7 +291,8 @@ class EditView extends PureComponent {
         } else {
             this.setState({ isDrag: false });
         }
-        if (this.overObj && this.overObj.dataset.allowdrop === 'true') {
+        const {innerView} = this.props;
+        if (this.overObj && this.overObj.dataset.allowdrop === 'true' && !innerView) {
             util.removeClass(this.overObj, 'over');
             //console.log(this.overObj)
             const { x, y } = this.state;

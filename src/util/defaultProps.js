@@ -9,7 +9,11 @@ export default {
         props:{
             allowdrop:true,
             editable:true
+        },
+        datasource:{
+            
         }
+
     },
     'Image':{
         props:{
@@ -18,9 +22,7 @@ export default {
             alt: '',
             src: src
         },
-        style:{
-            overflow:'hidden'
-        }
+        datas: {}
     },
     'Text':{
         props:{
@@ -28,7 +30,8 @@ export default {
             editable:true,
             text: '默认文本',
             multiline: true
-        }
+        },
+        datas: {}
     },
     'ListView':{
         style:{
@@ -44,12 +47,12 @@ export default {
         item:{
             type: 'View',
             style: {
-                backgroundColor:'pink',
-                w: 100,
+                backgroundColor:'#fc5270',
+                w: 200,
                 h: 100,
             },
             props: {
-                editable: false,
+                editable: true,
                 allowdrop: true,
             },
             child: []

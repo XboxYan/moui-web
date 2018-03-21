@@ -45,7 +45,7 @@ export default class Center extends PureComponent {
         updata(_layout);
     }
 
-    loop = (data, m = '',s='-') => data.map((item, i) => {
+    loop = (data, m = '',s='-',innerView) => data.map((item, i) => {
         if (!item) {
             return null
         }
@@ -53,7 +53,7 @@ export default class Center extends PureComponent {
         let key = m + s + i;
         let child = null;
         if(item.type==='ListView'){
-            child = this.loop(item.item, key,'~');
+            child = this.loop(item.item, key,'~',true);
         }else{
             if (item.child && item.child.length) {
                 child = this.loop(item.child, key);
@@ -64,6 +64,7 @@ export default class Center extends PureComponent {
             <Tag
                 dragEnd={this.dragEnd(index)}
                 onChange={this.onChange(index)}
+                innerView={innerView}
                 index={index}
                 addCom={this.addCom}
                 onFocus={this.onFocus(index)}

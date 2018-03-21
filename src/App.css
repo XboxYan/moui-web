@@ -72,3 +72,4 @@ img{vertical-align: middle;outline: 0;border: 0}
 .text-o{ text-decoration: overline}
 .font-bold[data-checked=true],.font-italic[data-checked=true]{ background: #ccc;}
 .font-bold:focus,.font-italic:focus{ border-color: none; color: initial}
+.url-preview{ padding:5px 10px; background: #f2f4f5; white-space: normal; word-break: break-word;}

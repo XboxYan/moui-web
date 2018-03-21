@@ -15,7 +15,7 @@ export default class PropsList extends PureComponent {
             <div className="card-container">
                 <Tabs type="card" className="tab-container">
                     <TabPane tab="属性" key="1"><PropsPane {...this.props} /></TabPane>
-                    <TabPane tab="样式" key="2"><StylesPane {...this.props} /></TabPane>
+                    <TabPane tab="数据源" key="2"><StylesPane {...this.props} /></TabPane>
                 </Tabs>
             </div>
         );

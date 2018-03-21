@@ -14,6 +14,14 @@ const initialState = {
                 editable:false,
                 allowdrop:true,
             },
+            datasource:{
+                id:2,
+                params:[{
+                    id:5,
+                    name:'params1',
+                    value:'3333'
+                }]
+            },
             child:[]
         }
     ]),
