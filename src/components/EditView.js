@@ -392,14 +392,14 @@ class EditView extends PureComponent {
         }
         //复制
         if (ev.keyCode === 67 && ev.ctrlKey) {
-            if(document.activeElement.tagName !== 'INPUT'){
+            if(ev.target.tagName !== 'INPUT'){
                 this.props.onCopy && this.props.onCopy();
                 return false
             }
         }
         //粘贴
         if (ev.keyCode === 86 && ev.ctrlKey) {
-            if(document.activeElement.tagName !== 'INPUT'){
+            if(ev.target.tagName !== 'INPUT'){
                 this.props.onPaste && this.props.onPaste(this.mousePos,this.props.index);
                 return false
             }  
