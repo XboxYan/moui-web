@@ -17,6 +17,7 @@ const ADD = (layout, index, type, { x, y }) => {
         props: {...defaultProps[type].props}, 
         item: defaultProps[type].item?[defaultProps[type].item]:null,
         datasource: defaultProps[type].datasource||null,
+        datas: defaultProps[type].datas||null,
         child: []
     })
     const $O = O.updateIn([...tree, 'child'], value => value.push(Com));
@@ -26,7 +27,6 @@ const ADD = (layout, index, type, { x, y }) => {
 const FOCUS = (layout, index) => {
     const O = layout;
     const tree = paseTree(index);
-    console.log(tree)
     const $O = O.getIn(tree);
     return $O;
 }
@@ -35,6 +35,21 @@ const CHANGE = (layout, index, key_value, path) => {
     const O = layout;
     const tree = paseTree(index);
     const $O = O.updateIn([...tree, ...path],value=>value.merge(Immutable.fromJS(key_value)))
+    return $O
+}
+
+const COPY = (layout, target, item, pos) => {
+    const O = layout;
+    const tree = paseTree(target);
+    const $current = Immutable.fromJS(item).updateIn(['style'],value=>value.merge(Immutable.fromJS(pos)));
+    const $O = O.updateIn([...tree,'child'],value=>value.push($current))
+    return $O
+}
+
+const DELETE = (layout, index) => {
+    const O = layout;
+    const tree = paseTree(index);
+    const $O = O.removeIn(tree);
     return $O
 }
 
@@ -65,4 +80,4 @@ const MOVE = (layout, pos, target, index, path) => {
     }
 }
 
-export { ADD, CHANGE, MOVE, FOCUS };
+export { ADD, CHANGE, MOVE, FOCUS, COPY, DELETE };

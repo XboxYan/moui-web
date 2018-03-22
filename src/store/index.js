@@ -15,11 +15,21 @@ const initialState = {
                 allowdrop:true,
             },
             datasource:{
-                id:2,
+                id:1,
                 params:[{
-                    id:5,
-                    name:'params1',
-                    value:'3333'
+                    id:1,
+                    name:'assetId',
+                    value:'TWSX1513927660662880'
+                },
+                {
+                    id:2,
+                    name:'page',
+                    value:'1'
+                },
+                {
+                    id:3,
+                    name:'pageSize',
+                    value:'2'
                 }]
             },
             child:[]

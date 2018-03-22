@@ -23,7 +23,8 @@
 .a-topRight{ right: -5px; top: -5px; cursor: sw-resize;}
 .a-bottomLeft{ left: -5px; bottom: -5px; cursor: sw-resize;}
 .a-bottomRight{ right: -5px; bottom: -5px; cursor: se-resize;}
-.view[data-editable=true]:focus>.a-resize{ visibility: visible; }
+.view-del-btn{ visibility: hidden; position: absolute; z-index: 100; font-size: 16px; right: -5px; top: -5px; transform: translate(100%,-100%);}
+.view[data-editable=true]:focus>.a-resize,.view[data-editable=true]:focus>.view-del-btn{ visibility: visible; }
 .view>.editview{ position: absolute; z-index: 20; cursor: pointer; text-align: center; font-size: 14px; line-height: 20px; color: #fff; left: 50%; top: -10px; transform: translate(-50%,-100%); width: 20px; height: 20px; background: rgba(0,0,0,.8); border-radius: 3px; visibility: hidden;}
 .view[data-editable=false]>.editview::before{ content: 'L'; }
 .view[data-editable=true]:focus>.editview::before{ content: 'U'; }
@@ -38,3 +39,4 @@
 [data-tips]:hover:before,[data-tips]:hover:after {visibility: visible;}
 [data-tips]::before,[data-tips]::after { position: absolute; visibility: hidden; transform: translate(20px,20px);opacity: 0;transition: .15s .15s;}
 [data-tips]:hover::before,[data-tips]:hover::after {visibility: visible;transform: translate(10px,10px);opacity: 1;}
+

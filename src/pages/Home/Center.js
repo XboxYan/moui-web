@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
+import { message } from 'antd';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
 import ListView from '../../components/ListView';
-import { ADD, CHANGE, MOVE } from '../../util/action';
+import { ADD, CHANGE, MOVE, COPY, DELETE } from '../../util/action';
 
 const type = {
     'View': View,
@@ -13,18 +14,32 @@ const type = {
 }
 
 export default class Center extends PureComponent {
-    onDragEnd = (A, x, y) => {
-        console.log(A, x, y)
-    }
 
-    onDrop = (A, x, y) => {
-        console.log(A, x, y)
-    }
+    copyData = null;
 
     onFocus = (index) => () => {
         const { focus } = this.props.store;
-        console.log(index)
         focus(index);
+    }
+
+    onCopy = () => {
+        const {current} = this.props.store;
+        message.success('组件已复制');
+        this.copyData = current;
+    }
+
+    onPaste = (pos,index) => {
+        if(this.copyData){
+            const { layout, updata } = this.props.store;
+            const _layout = COPY(layout, index, this.copyData, {x:pos.x,y:pos.y});
+            updata(_layout);
+        }
+    }
+
+    onPasteTips = () => {
+        if(this.copyData){
+            message.error('该组件不允许置入其它组件');
+        }
     }
 
     dragEnd = (index) => (pos, target) => {
@@ -39,10 +54,28 @@ export default class Center extends PureComponent {
         updata(_layout);
     }
 
+    addDatas = (type) => ({ name, value, index }) => {
+        const { layout, updata } = this.props.store;
+        if(type==='Text'||type==='Image'){
+            const _layout = CHANGE(layout, index, {'props':name,value}, ['datas']);
+            updata(_layout);
+        }else{
+            const _layout = CHANGE(layout, index, {'paramsDy':[{name,value}]}, ['datasource']);
+            updata(_layout);
+        }
+    }
+
     onChange = (index) => (key_value, type = ['style']) => {
         const { layout, updata } = this.props.store;
         const _layout = CHANGE(layout, index, key_value, type);
         updata(_layout);
+    }
+
+    onDelete = (index) => () => {
+        const { layout, updata } = this.props.store;
+        const _layout = DELETE(layout, index);
+        updata(_layout,index.slice(0,-2));
+        message.success('该组件已删除');
     }
 
     loop = (data, m = '',s='-',innerView) => data.map((item, i) => {
@@ -62,24 +95,26 @@ export default class Center extends PureComponent {
         const index = item.type + key;
         return (
             <Tag
+                {...item}
                 dragEnd={this.dragEnd(index)}
                 onChange={this.onChange(index)}
                 innerView={innerView}
                 index={index}
                 addCom={this.addCom}
+                addDatas={this.addDatas(item.type)}
                 onFocus={this.onFocus(index)}
                 onDrop={this.onDrop}
+                onDelete={this.onDelete(index)}
+                onPaste={item.props.allowdrop?this.onPaste:this.onPasteTips}
+                onCopy={this.onCopy}
                 onSet={this.onChange(index)}
-                key={index}
-                style={item.style}
-                props={item.props}>
+                key={index}>
                 {child}
             </Tag>
         )
     });
     render() {
         const { layout } = this.props.store;
-        console.log(layout.toJS())
         return this.loop(layout.toJS());
     }
 }

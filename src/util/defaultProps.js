@@ -3,8 +3,8 @@ import src from '../img/default_img.png';
 export default {
     'View':{
         style:{
-            w:100,
-            h:100
+            w:200,
+            h:200
         },
         props:{
             allowdrop:true,

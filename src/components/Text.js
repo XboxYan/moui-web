@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import EditView from './EditView';
-import { Input } from 'antd';
+import { Input,message } from 'antd';
 
 export default class Text extends PureComponent {
 
@@ -12,8 +12,13 @@ export default class Text extends PureComponent {
     }
 
     onDoubleClick = () => {
-        this.setState({ contentEditable: true });
-        this.props.onChange && this.props.onChange({editable: false},['props']);
+        const { datas:{props}} = this.props;
+        if(props){
+            message.error('使用外部数据无法修改');
+        }else{
+            this.setState({ contentEditable: true });
+            this.props.onChange && this.props.onChange({editable: false},['props']);
+        }
     }
 
     onBlur = (ev) => {
@@ -26,7 +31,8 @@ export default class Text extends PureComponent {
 
     render() {
         const { contentEditable } = this.state;
-        const {text,multiline} = this.props.props;
+        const { props:{text,multiline},datas:{value}} = this.props;
+        
         return (
 
             <EditView {...this.props} onDoubleClick={this.onDoubleClick}>
@@ -34,7 +40,7 @@ export default class Text extends PureComponent {
                     contentEditable ?
                         <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />
                         :
-                        <div className={multiline ? '' : 'els'}>{text}</div>
+                        <div className={multiline ? '' : 'els'}>{value||text}</div>
                 }
             </EditView>
         );

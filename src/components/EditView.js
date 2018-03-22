@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Icon } from 'antd';
 import util from '../util';
 import './base.css';
 
@@ -150,6 +151,12 @@ class EditView extends PureComponent {
 
     //初始位置
     start = {
+        x: 0,
+        y: 0,
+    }
+
+    //鼠标位置
+    mousePos = {
         x: 0,
         y: 0,
     }
@@ -334,7 +341,7 @@ class EditView extends PureComponent {
     ondragover = (ev) => {
         ev.stopPropagation();
         const { props:{allowdrop} } = this.props;
-        if (allowdrop) {
+        if (allowdrop||window.isDragData) {
             this.setState({ isOver: true });
             ev.preventDefault();
         }
@@ -347,21 +354,25 @@ class EditView extends PureComponent {
     ondrop = (ev) => {
         ev.stopPropagation();
         const { props:{allowdrop} } = this.props;
-        if (allowdrop) {
+        if (allowdrop||window.isDragData) {
             const source = ev.dataTransfer.getData('source');
             const { clientX, clientY } = ev;
+            const { left, top } = ev.target.getBoundingClientRect();
+            let x = clientX - ev.dataTransfer.getData('x') - left;
+            let y = clientY - ev.dataTransfer.getData('y') - top;
+            const {index} = this.props;
             if (source === 'left') {
-                const { left, top } = ev.target.getBoundingClientRect();
-                let x = clientX - ev.dataTransfer.getData('x') - left;
-                let y = clientY - ev.dataTransfer.getData('y') - top;
                 const type = ev.dataTransfer.getData('type');
-                const {index} = this.props;
                 this.props.addCom&&this.props.addCom({type,x,y,index})
+            }
+            if (source === 'right') {
+                const name = ev.dataTransfer.getData('name');
+                const value = ev.dataTransfer.getData('value');
+                this.props.addDatas&&this.props.addDatas({name,value,index})
             }
             this.setState({ isOver: false });
             ev.preventDefault();
         }
-
     }
 
     togglelock = (ev) => {
@@ -371,15 +382,31 @@ class EditView extends PureComponent {
         this.props.onSet && this.props.onSet({editable: !editable},['props']);
     }
 
-    //键盘移动
-    keymove = (ev) => {
+    //键盘操作
+    keydown = (ev) => {
+        ev.preventDefault();
         ev.stopPropagation();
+        //删除
+        if (ev.keyCode === 46) {
+            this.onDelete(ev);
+            return false
+        }
+        //复制
+        if (ev.keyCode === 67 && ev.ctrlKey) {
+            this.props.onCopy && this.props.onCopy();
+            return false
+        }
+        //粘贴
+        if (ev.keyCode === 86 && ev.ctrlKey) {
+            this.props.onPaste && this.props.onPaste(this.mousePos,this.props.index);
+            return false
+        }
+        //移动
         const { editable } = this.state;
         if (!editable) {
             return false;
         }
         const move = () => {
-            ev.preventDefault(ev);
             this.setState({ x, y, _x: x, _y: y })
         }
         let { x, y } = this.state;
@@ -424,9 +451,18 @@ class EditView extends PureComponent {
     }
 
     onClick = (ev) => {
-        //console.log(this)
         ev.stopPropagation();
+        const { left, top } = ev.target.getBoundingClientRect();
+        this.mousePos = {
+            x:ev.clientX - left,
+            y:ev.clientY - top
+        }
         this.props.onClick && this.props.onClick(this);
+    }
+
+    onDelete = (ev) => {
+        ev.stopPropagation();
+        this.props.onDelete && this.props.onDelete();
     }
 
     onFocus = (ev) => {
@@ -504,7 +540,7 @@ class EditView extends PureComponent {
                 tabIndex={0}
                 data-index={index}
                 onMouseOver={this.hover}
-                onKeyDown={this.keymove}
+                onKeyDown={this.keydown}
                 onKeyUp={this.keymoveEnd}
                 onFocus={this.onFocus}
                 data-pos-x={x}
@@ -524,6 +560,7 @@ class EditView extends PureComponent {
                 onMouseDown={this.dragStart}
                 className={`view ${className}`}>
                 <span onClick={this.togglelock} className="editview" />
+                <a className="view-del-btn" onMouseDown={(ev)=>ev.stopPropagation()} onClick={this.onDelete}><Icon type="close-circle" /></a>
                 {editable && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
                 <div style={{..._style,width:'100%',height:'100%'}}>
                     {this.renderChild()}
