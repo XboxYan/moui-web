@@ -11,6 +11,8 @@ const paseTree = (path) => {
 const ADD = (layout, index, type, { x, y }) => {
     const O = layout;
     const tree = paseTree(index);
+    const c = O.getIn([...tree, 'child']);
+    const e = c.indexOf(null);
     const Com = Immutable.fromJS({
         type, 
         style: { ...defaultProps[type].style,x, y }, 
@@ -20,8 +22,13 @@ const ADD = (layout, index, type, { x, y }) => {
         datas: defaultProps[type].datas||null,
         child: []
     })
-    const $O = O.updateIn([...tree, 'child'], value => value.push(Com));
-    return $O
+    if(e < 0){
+        const $O = O.updateIn([...tree, 'child'], value => value.push(Com));
+        return $O
+    }else{
+        const $O = O.setIn([...tree, 'child', e], Com);
+        return $O
+    }
 }
 
 const FOCUS = (layout, index) => {
@@ -42,14 +49,21 @@ const COPY = (layout, target, item, pos) => {
     const O = layout;
     const tree = paseTree(target);
     const $current = Immutable.fromJS(item).updateIn(['style'],value=>value.merge(Immutable.fromJS(pos)));
-    const $O = O.updateIn([...tree,'child'],value=>value.push($current))
-    return $O
+    const c = O.getIn([...tree, 'child']);
+    const e = c.indexOf(null);
+    if(e < 0){
+        const $O = O.updateIn([...tree,'child'],value=>value.push($current))
+        return $O
+    }else{
+        const $O = O.setIn([...tree, 'child', e], $current);
+        return $O
+    }
 }
 
 const DELETE = (layout, index) => {
     const O = layout;
     const tree = paseTree(index);
-    const $O = O.removeIn(tree);
+    const $O = O.setIn(tree,null);
     return $O
 }
 

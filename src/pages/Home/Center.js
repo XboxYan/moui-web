@@ -38,7 +38,7 @@ export default class Center extends PureComponent {
 
     onPasteTips = () => {
         if(this.copyData){
-            message.error('该组件不允许置入其它组件');
+            message.error('该组件内不允许置入其它组件');
         }
     }
 

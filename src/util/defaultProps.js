@@ -52,6 +52,7 @@ export default {
                 editable: true,
                 allowdrop: true,
             },
+            datasource: {},
             child: []
         },
         datasource:{}

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon,message } from 'antd';
 import util from '../util';
 import './base.css';
 
@@ -384,7 +384,6 @@ class EditView extends PureComponent {
 
     //键盘操作
     keydown = (ev) => {
-        ev.preventDefault();
         ev.stopPropagation();
         //删除
         if (ev.keyCode === 46) {
@@ -393,13 +392,17 @@ class EditView extends PureComponent {
         }
         //复制
         if (ev.keyCode === 67 && ev.ctrlKey) {
-            this.props.onCopy && this.props.onCopy();
-            return false
+            if(document.activeElement.tagName !== 'INPUT'){
+                this.props.onCopy && this.props.onCopy();
+                return false
+            }
         }
         //粘贴
         if (ev.keyCode === 86 && ev.ctrlKey) {
-            this.props.onPaste && this.props.onPaste(this.mousePos,this.props.index);
-            return false
+            if(document.activeElement.tagName !== 'INPUT'){
+                this.props.onPaste && this.props.onPaste(this.mousePos,this.props.index);
+                return false
+            }  
         }
         //移动
         const { editable } = this.state;
@@ -407,6 +410,7 @@ class EditView extends PureComponent {
             return false;
         }
         const move = () => {
+            ev.preventDefault();
             this.setState({ x, y, _x: x, _y: y })
         }
         let { x, y } = this.state;
@@ -462,6 +466,19 @@ class EditView extends PureComponent {
 
     onDelete = (ev) => {
         ev.stopPropagation();
+        const {innerView,index} = this.props;
+        if(index==='View-0'){
+            message.error('根组件不允许删除');
+            return false;
+        }
+        if(innerView){
+            message.error('该组件不允许删除');
+            return false;
+        }     
+        if(!this.state.editable){
+            message.error('该组件已锁定');
+            return false;
+        }
         this.props.onDelete && this.props.onDelete();
     }
 
@@ -526,7 +543,7 @@ class EditView extends PureComponent {
     }
 
     render() {
-        const { className, props:{allowdrop}, index,style } = this.props;
+        const { className, props:{allowdrop}, index,style,innerView } = this.props;
         const { editable=true, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
         const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
@@ -559,8 +576,8 @@ class EditView extends PureComponent {
                 onMouseOut={this.mouseout}
                 onMouseDown={this.dragStart}
                 className={`view ${className}`}>
+                {!innerView&&<a className="view-del-btn" onMouseDown={(ev)=>ev.stopPropagation()} onClick={this.onDelete}><Icon type="close-circle" /></a>}
                 <span onClick={this.togglelock} className="editview" />
-                <a className="view-del-btn" onMouseDown={(ev)=>ev.stopPropagation()} onClick={this.onDelete}><Icon type="close-circle" /></a>
                 {editable && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
                 <div style={{..._style,width:'100%',height:'100%'}}>
                     {this.renderChild()}

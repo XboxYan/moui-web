@@ -57,7 +57,8 @@ export default class PropsPane extends PureComponent {
             textDecoration = 'unset'
         },
         props: {
-            editable
+            editable,
+            multiline
         }
      } = this.props.store.current;
         return (
@@ -161,6 +162,9 @@ export default class PropsPane extends PureComponent {
                                     <Radio.Button value="overline" className="text-o">T</Radio.Button>
                                 </Radio.Group>
                             </FormItem>
+                        </Col>
+                        <Col span={24}>
+                            <FormItem label="换行"><Checkbox checked={multiline} onChange={(e) => this.onSet({ multiline: e.target.checked })} /></FormItem>
                         </Col>
                     </Row>
                 </Form>

@@ -23,7 +23,8 @@
 .a-topRight{ right: -5px; top: -5px; cursor: sw-resize;}
 .a-bottomLeft{ left: -5px; bottom: -5px; cursor: sw-resize;}
 .a-bottomRight{ right: -5px; bottom: -5px; cursor: se-resize;}
-.view-del-btn{ visibility: hidden; position: absolute; z-index: 100; font-size: 16px; right: -5px; top: -5px; transform: translate(100%,-100%);}
+.view-del-btn{ visibility: hidden; position: absolute; z-index: 100; color: rgba(0,0,0,.8); font-size: 20px; right: -5px; top: -5px; transform: translate(100%,-100%);}
+.view-del-btn:hover{ color: #ff4d4f;}
 .view[data-editable=true]:focus>.a-resize,.view[data-editable=true]:focus>.view-del-btn{ visibility: visible; }
 .view>.editview{ position: absolute; z-index: 20; cursor: pointer; text-align: center; font-size: 14px; line-height: 20px; color: #fff; left: 50%; top: -10px; transform: translate(-50%,-100%); width: 20px; height: 20px; background: rgba(0,0,0,.8); border-radius: 3px; visibility: hidden;}
 .view[data-editable=false]>.editview::before{ content: 'L'; }
