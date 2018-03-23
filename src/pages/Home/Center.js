@@ -1,9 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent,Fragment } from 'react';
 import { message } from 'antd';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
 import ListView from '../../components/ListView';
+import TabView from '../../components/TabView';
 import { ADD, CHANGE, MOVE, COPY, DELETE } from '../../util/action';
 
 const type = {
@@ -11,6 +12,7 @@ const type = {
     'Text': Text,
     'Image': Image,
     'ListView': ListView,
+    'TabView': TabView,
 }
 
 export default class Center extends PureComponent {
@@ -87,6 +89,8 @@ export default class Center extends PureComponent {
         let child = null;
         if(item.type==='ListView'){
             child = this.loop(item.item, key,'~',true);
+        }else if(item.type==='TabView'){
+            child = [this.loop(item.tabs, key,'@',true),this.loop(item.contents, key,'#',true)];
         }else{
             if (item.child && item.child.length) {
                 child = this.loop(item.child, key);

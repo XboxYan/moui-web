@@ -26,6 +26,11 @@ const expCom = [
     name: '列表',
     ico: 'bars'
   },
+  {
+    type: 'TabView',
+    name: '标签',
+    ico: 'credit-card'
+  },
 ]
 
 

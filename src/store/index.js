@@ -13,6 +13,7 @@ const initialState = {
             props:{
                 editable:false,
                 allowdrop:true,
+                disabled:true
             },
             datasource:{
                 id:1,

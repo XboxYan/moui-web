@@ -5,9 +5,8 @@ export default class Image extends PureComponent {
 
     render() {
         const { props:{alt,src},datas:{value}} = this.props;
-        const style = {...this.props.style,...{overflow:'hidden'}}
         return (
-            <EditView {...this.props} style={style}>
+            <EditView {...this.props} className="ImageView">
                 <img draggable={false} alt={value||alt} src={value||src} />
             </EditView>
         );

@@ -13,14 +13,12 @@ export default class PropsPane extends PureComponent {
     }
 
     onChange = (key_value) => {
-        console.log(key_value);
         const { layout, updata, index } = this.props.store;
         const _layout = CHANGE(layout, index, key_value, ['style']);
         updata(_layout);
     }
 
     onSet = (key_value) => {
-        console.log(key_value);
         const { layout, updata, index } = this.props.store;
         const _layout = CHANGE(layout, index, key_value, ['props']);
         updata(_layout);
@@ -58,7 +56,12 @@ export default class PropsPane extends PureComponent {
         },
         props: {
             editable,
-            multiline
+            multiline,
+            disabled,
+            column,
+            row,
+            columngap,
+            rowgap
         }
      } = this.props.store.current;
         return (
@@ -79,7 +82,7 @@ export default class PropsPane extends PureComponent {
                             <FormItem label="H"><InputNumber disabled={!editable} size="small" min={0} value={h} onChange={(value) => this.onChange({ h: value })} /></FormItem>
                         </Col>
                         <Col span={24}>
-                            <FormItem label="锁定"><Checkbox checked={!editable} onChange={(e) => this.onSet({ editable: !e.target.checked })} /></FormItem>
+                            <FormItem label="锁定"><Checkbox disabled={disabled} checked={!editable} onChange={(e) => this.onSet({ editable: !e.target.checked })} /></FormItem>
                         </Col>
                     </Row>
                 </Form>
@@ -165,6 +168,29 @@ export default class PropsPane extends PureComponent {
                         </Col>
                         <Col span={24}>
                             <FormItem label="换行"><Checkbox checked={multiline} onChange={(e) => this.onSet({ multiline: e.target.checked })} /></FormItem>
+                        </Col>
+                    </Row>
+                </Form>
+                <Form className="form_pane">
+                    <h3 className="divider"><span>列表和栅格</span></h3>
+                    <Row gutter={10}>
+                        <Col span={24}>
+                            <FormItem label="行数">
+                                <Slider style={{ flex: 1, marginRight: 10 }} value={row} min={1} max={10} step={1} onChange={(value) => this.onSet({ row: value })} />
+                                <InputNumber style={{ width: 50 }} size="small" min={1} max={10} step={1} value={row} onChange={(value) => this.onSet({ row: value })} />
+                            </FormItem>
+                        </Col>
+                        <Col span={24}>
+                            <FormItem label="列数">
+                                <Slider style={{ flex: 1, marginRight: 10 }} value={column} min={1} max={10} step={1} onChange={(value) => this.onSet({ column: value })} />
+                                <InputNumber style={{ width: 50 }} size="small" min={1} max={10} step={1} value={column} onChange={(value) => this.onSet({ column: value })} />
+                            </FormItem>
+                        </Col>
+                        <Col span={12}>
+                            <FormItem label="行间距"><InputNumber size="small" min={0} value={rowgap} onChange={(value) => this.onSet({ rowgap: value })} /></FormItem>
+                        </Col>
+                        <Col span={12}>
+                            <FormItem label="列间距"><InputNumber size="small" min={0} value={columngap} onChange={(value) => this.onSet({ columngap: value })} /></FormItem>
                         </Col>
                     </Row>
                 </Form>

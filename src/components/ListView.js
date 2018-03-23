@@ -1,42 +1,37 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent,Fragment } from 'react';
 import EditView from './EditView';
 
 export default class ListView extends PureComponent {
-
-    state = {
-        data: [
-            {
-                name: 'aaa',
-                text: '1111'
-            },
-            {
-                name: 'bbb',
-                text: '2222'
-            },
-        ]
-    }
-
-    componentDidMount() {
-        //const style = {...defaultProps.style,...this.props.style}
-        //this.props.onChange && this.props.onChange({...style},['item']);
-    }
 
     render() {
         const {
             props: {
                 column,
-                gutter
+                row,
+                columngap,
+                rowgap,
             },
             index
         } = this.props;
-        const { data } = this.state;
+
+        const style = {...this.props.style,
+            ...{
+                gridTemplateColumns:`repeat(${column},auto)`,
+                gridTemplateRows:`repeat(${row},auto)`,
+                gridColumnGap:columngap,
+                gridRowGap:rowgap,
+            }
+        }
+
+        const list = Array.from({length:column*row}, (v,k) => k);
+        
         return (
-            <EditView {...this.props}>
+            <EditView {...this.props} style={style} className="ListView">
                 {
-                    data.map((el,i)=>(
-                        <div key={index+'~'+i} style={{height:120,position:'relative'}}>
-                        {this.props.children}
-                        </div>
+                    list.map((el,i)=>(
+                        <Fragment key={index+'~'+i}>
+                            {this.props.children}
+                        </Fragment>
                     ))
                 }
             </EditView>

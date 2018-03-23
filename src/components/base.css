@@ -40,4 +40,10 @@
 [data-tips]:hover:before,[data-tips]:hover:after {visibility: visible;}
 [data-tips]::before,[data-tips]::after { position: absolute; visibility: hidden; transform: translate(20px,20px);opacity: 0;transition: .15s .15s;}
 [data-tips]:hover::before,[data-tips]:hover::after {visibility: visible;transform: translate(10px,10px);opacity: 1;}
-
+.ImageView .ViewInner{ overflow: hidden;}
+.ListView>.ViewInner>.view{ position: relative;}
+.ListView>.ViewInner{ display: grid;}
+.TabView>.ViewInner{ display: flex; flex-direction: column;}
+.view-tabs>.view,.view-contents>.view{ position: relative;}
+.view-contents{ flex: 1; }
+.view-contents>.view{ height: 100%;}

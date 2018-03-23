@@ -393,7 +393,12 @@ class EditView extends PureComponent {
         //复制
         if (ev.keyCode === 67 && ev.ctrlKey) {
             if(ev.target.tagName !== 'INPUT'){
-                this.props.onCopy && this.props.onCopy();
+                const {innerView} = this.props;
+                if(innerView){
+                    message.error('内部组件不允许被复制');
+                }else{
+                    this.props.onCopy && this.props.onCopy();
+                }
                 return false
             }
         }
@@ -472,7 +477,7 @@ class EditView extends PureComponent {
             return false;
         }
         if(innerView){
-            message.error('该组件不允许删除');
+            message.error('内部组件不允许删除');
             return false;
         }     
         if(!this.state.editable){
@@ -543,7 +548,7 @@ class EditView extends PureComponent {
     }
 
     render() {
-        const { className, props:{allowdrop}, index,style,innerView } = this.props;
+        const { className, props:{allowdrop, disabled}, index,style,innerView } = this.props;
         const { editable=true, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
         const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
@@ -577,9 +582,9 @@ class EditView extends PureComponent {
                 onMouseDown={this.dragStart}
                 className={`view ${className}`}>
                 {!innerView&&<a className="view-del-btn" onMouseDown={(ev)=>ev.stopPropagation()} onClick={this.onDelete}><Icon type="close-circle" /></a>}
-                <span onClick={this.togglelock} className="editview" />
-                {editable && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
-                <div style={{..._style,width:'100%',height:'100%'}}>
+                {!disabled &&<span onClick={this.togglelock} className="editview" />}
+                {editable &&!disabled && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
+                <div className="ViewInner" style={{..._style,width:'100%',height:'100%'}}>
                     {this.renderChild()}
                 </div>
             </div>
