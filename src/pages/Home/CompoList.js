@@ -24,7 +24,14 @@ const expCom = [
   {
     type: 'ListView',
     name: '列表',
+    dynamic: true,
     ico: 'bars'
+  },
+  {
+    type: 'TabView',
+    name: '动态标签',
+    dynamic: true,
+    ico: 'credit-card'
   },
   {
     type: 'TabView',
@@ -43,6 +50,9 @@ class ComItem extends PureComponent {
     ev.dataTransfer.setData("type",item.type);
     ev.dataTransfer.setData("x",clientX - left);
     ev.dataTransfer.setData("y",clientY - top);
+    if(item.dynamic){
+      ev.dataTransfer.setData("dynamic",true);
+    }
   }
   render() {
     const { item } = this.props;
@@ -50,6 +60,7 @@ class ComItem extends PureComponent {
       <div
         draggable={true}
         onDragStart={this.onDragStart}
+        data-dynamic={item.dynamic}
         className="compItem"
       >
         <Icon style={{ fontSize: 20 }} type={item.ico} />

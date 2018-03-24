@@ -363,7 +363,8 @@ class EditView extends PureComponent {
             const {index} = this.props;
             if (source === 'left') {
                 const type = ev.dataTransfer.getData('type');
-                this.props.addCom&&this.props.addCom({type,x,y,index})
+                const dynamic = ev.dataTransfer.getData('dynamic');
+                this.props.addCom&&this.props.addCom({type,x,y,index,dynamic})
             }
             if (source === 'right') {
                 const name = ev.dataTransfer.getData('name');
@@ -460,7 +461,7 @@ class EditView extends PureComponent {
     }
 
     onClick = (ev) => {
-        ev.stopPropagation();
+        //ev.stopPropagation();
         const { left, top } = ev.target.getBoundingClientRect();
         this.mousePos = {
             x:ev.clientX - left,

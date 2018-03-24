@@ -36,7 +36,7 @@ export default {
     },
     'ListView':{
         style:{
-            w:200,
+            w:300,
             h:300,
         },
         props:{
@@ -44,10 +44,10 @@ export default {
             editable:true,
             column: 3,
             row: 3,
-            columngap: 10,
-            rowgap: 10
+            columnGap: 10,
+            rowGap: 10
         },
-        item:{
+        item:[{
             type: 'View',
             style: {
                 backgroundColor:'#c4d9ff',
@@ -59,7 +59,7 @@ export default {
             },
             datasource: {},
             child: []
-        },
+        }],
         datasource:{}
     },
     'TabView':{
@@ -71,24 +71,27 @@ export default {
             allowdrop:false,
             editable:true,
             direction: "top",
+            dynamic:false,
+            tabWidth:100,
+            tabHeight:50,
+            tabGap:10,
+            tabAlign:'start',
         },
         datasource:{},
-        tabs: {
+        tabs: [{
             type: 'View',
             style: {
-                w:50,
-                h:50,
                 backgroundColor:'#c4d9ff',
             },
             props: {
-                editable: true,
+                editable: false,
                 allowdrop: true,
-                disabled: false
+                disabled: true
             },
             datasource: {},
             child: []
-        },
-        contents: {
+        }],
+        contents: [{
             type: 'View',
             style: {
                 backgroundColor:'#ffd4c4',
@@ -100,6 +103,6 @@ export default {
             },
             datasource: {},
             child: []
-        },
+        }],
     }
 }

@@ -40,7 +40,8 @@ img{vertical-align: middle;outline: 0;border: 0}
 .ant-layout-sider{ background: #fff;}
 .ant-collapse-content > .ant-collapse-content-box{ padding-bottom: 0;}
 .customPanelStyle{background: #fff;border-radius: 4px; margin-top:24px;border: 0;overflow: 'hidden'}
-.compItem{ cursor: default; user-select: none; padding: 5px; background: #f0f6ff; text-align: center; font-size: 12px;}
+.compItem{ cursor: default; white-space: nowrap; position: relative; overflow: hidden; user-select: none; padding: 5px; background: #f0f6ff; text-align: center; font-size: 12px;}
+.compItem[data-dynamic=true]:after{ content: ''; position: absolute; right: 0; top: 0; border-color: royalblue royalblue transparent transparent; color: #fff; border-width: 5px; border-style: solid; }
 .compItem:hover{color: royalblue; }
 .card-container{ background: #f0f2f5; height: 100%;display: flex;flex-direction: column;}
 .tab-container{ display: flex;flex-direction: column;flex: 1;}
@@ -82,6 +83,7 @@ img{vertical-align: middle;outline: 0;border: 0}
 .data-params-bd{ display: flex;}
 .data-params-bd .ant-input-group-wrapper{ flex:1; margin-right: 10px; }
 .form_pane>.ant-btn{ margin-right: 10px;}
+.form_pane .ant-slider{ margin-right: 10px; margin-top: 10px; flex: 1;}
 .flex-center{ display: flex; height: 100%; justify-content: center; align-items: center;}
 .url-preview h5{ cursor: pointer; font-size: 14px; padding-top: 5px; color:royalblue;}
 .url-preview h5:hover{ text-decoration: underline}
@@ -93,3 +95,7 @@ img{vertical-align: middle;outline: 0;border: 0}
 .pre-list li:hover{ background: #f0f6ff; color: royalblue;}
 .pre-list li strong{ background: #999; color: #fff; font-weight: normal; padding: 2px 4px; border-radius: 2px; margin-right: 5px;}
 .tagView p{ padding: 10px; background: #f0f6ff; margin-top: 10px;}
+.radiogroup-small .ant-radio-inner{ top: -2px; width: 14px;height: 14px;}
+.radiogroup-small .ant-radio-inner:after{ left: 2px;top: 2px;}
+.radiogroup-small .ant-radio-wrapper{ flex: 1; margin-right: 0;}
+.radiogroup-small.ant-radio-group{ display: flex; flex: 1; margin-right: -8px;}

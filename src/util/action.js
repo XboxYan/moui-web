@@ -8,18 +8,19 @@ const paseTree = (path) => {
     return path.replace(/-/g, '-child-').replace(/~/g, '-item-').replace(/@/g, '-tabs-').replace(/#/g, '-contents-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
 }
 
-const ADD = (layout, index, type, { x, y }) => {
+const ADD = (layout, index, type, { x, y },dynamic) => {
     const O = layout;
     const tree = paseTree(index);
     const c = O.getIn([...tree, 'child']);
     const e = c.indexOf(null);
+    const $dynamic = dynamic?{dynamic:!!dynamic}:{};
     const Com = Immutable.fromJS({
         type, 
         style: { ...defaultProps[type].style,x, y }, 
-        props: {...defaultProps[type].props}, 
-        item: defaultProps[type].item?[defaultProps[type].item]:null,
-        tabs: defaultProps[type].tabs?[defaultProps[type].tabs]:null,
-        contents: defaultProps[type].contents?[defaultProps[type].contents]:null,
+        props: {...defaultProps[type].props,...$dynamic}, 
+        item: defaultProps[type].item||null,
+        tabs: defaultProps[type].tabs||null,
+        contents: defaultProps[type].contents||null,
         datasource: defaultProps[type].datasource||null,
         datas: defaultProps[type].datas||null,
         child: []
@@ -62,6 +63,23 @@ const COPY = (layout, target, item, pos) => {
     }
 }
 
+const ADDTAB = (layout,index) => {
+    const O = layout;
+    const tree = paseTree(index);
+    const tabs = O.getIn([...tree,'tabs']);
+    const $tabs = Immutable.fromJS(defaultProps.TabView.tabs[0]);
+    const contents = O.getIn([...tree,'contents']);
+    const $contents = Immutable.fromJS(defaultProps.TabView.contents[0]);
+    const e = tabs.indexOf(null);
+    if(e < 0){
+        const $O = O.updateIn([...tree,'tabs'],value=>value.push($tabs)).updateIn([...tree,'contents'],value=>value.push($contents));
+        return $O
+    }else{
+        const $O = O.setIn([...tree,'tabs',e],$tabs).setIn([...tree,'contents',e],$contents);
+        return $O
+    }
+}
+
 const DELETE = (layout, index) => {
     const O = layout;
     const tree = paseTree(index);
@@ -96,4 +114,4 @@ const MOVE = (layout, pos, target, index, path) => {
     }
 }
 
-export { ADD, CHANGE, MOVE, FOCUS, COPY, DELETE };
+export { ADD, CHANGE, MOVE, FOCUS, COPY, DELETE, ADDTAB };

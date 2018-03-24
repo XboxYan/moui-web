@@ -8,8 +8,8 @@ export default class ListView extends PureComponent {
             props: {
                 column,
                 row,
-                columngap,
-                rowgap,
+                columnGap,
+                rowGap,
             },
             index
         } = this.props;
@@ -18,8 +18,8 @@ export default class ListView extends PureComponent {
             ...{
                 gridTemplateColumns:`repeat(${column},auto)`,
                 gridTemplateRows:`repeat(${row},auto)`,
-                gridColumnGap:columngap,
-                gridRowGap:rowgap,
+                gridColumnGap:columnGap,
+                gridRowGap:rowGap,
             }
         }
 

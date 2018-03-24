@@ -1,11 +1,11 @@
-import React, { PureComponent,Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { message } from 'antd';
 import Image from '../../components/Image';
 import View from '../../components/View';
 import Text from '../../components/Text';
 import ListView from '../../components/ListView';
 import TabView from '../../components/TabView';
-import { ADD, CHANGE, MOVE, COPY, DELETE } from '../../util/action';
+import { ADD, CHANGE, MOVE, COPY, DELETE, ADDTAB } from '../../util/action';
 
 const type = {
     'View': View,
@@ -50,9 +50,16 @@ export default class Center extends PureComponent {
         updata(_layout,focusindex);
     }
 
-    addCom = ({ type, x, y, index }) => {
+    addCom = ({ type, x, y, index,dynamic }) => {
         const { layout, updata } = this.props.store;
-        const _layout = ADD(layout, index, type, { x, y });
+        const _layout = ADD(layout, index, type, { x, y },dynamic);
+        updata(_layout);
+    }
+
+    addTab = (index) => () => {
+        const { layout, updata } = this.props.store;
+        const _layout = ADDTAB(layout, index);
+        console.log(_layout.toJS())
         updata(_layout);
     }
 
@@ -106,6 +113,7 @@ export default class Center extends PureComponent {
                 index={index}
                 addCom={this.addCom}
                 addDatas={this.addDatas(item.type)}
+                addTab={this.addTab(index)}
                 onFocus={this.onFocus(index)}
                 onDrop={this.onDrop}
                 onDelete={this.onDelete(index)}

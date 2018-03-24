@@ -26,6 +26,7 @@ export default class Index extends PureComponent {
           </Header>
           <Layout>
             <Sider
+              width={220}
               collapsedWidth={0}
               collapsible={true}
             >
@@ -44,7 +45,7 @@ export default class Index extends PureComponent {
                 Footer
             </Footer>
             </Layout>
-            <Sider width={250}>
+            <Sider width={260}>
               <StoreContext.Consumer>
                 {
                   context => <PropsList store={context} />
