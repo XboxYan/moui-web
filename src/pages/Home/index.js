@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Layout, Icon } from 'antd';
+import { Layout, Icon, Breadcrumb } from 'antd';
 import ProjectList from './ProjectList';
 import CompoList from './CompoList';
 import PropsList from './PropsList';
@@ -7,15 +7,37 @@ import Center from './Center';
 import StoreProvider, { StoreContext } from '../../store';
 const { Header, Footer, Sider, Content } = Layout;
 
-
+class TreeNode extends PureComponent {
+  paseTree = (path) => {
+    //View>-   0-0
+    //View,Image
+    //View>-   0-0~0
+    //View,ListView,View
+    //0View0ListView0View
+    
+    let tree = [];
+    let [type,_path] = path.split('>-0');
+    let $path = (_path.replace(/-/g, 'View').replace(/~/g, 'ListView').replace(/@/g, 'TabView').replace(/#/g, 'TabView').replace(/[0-9]/g,',')) + type;
+    return $path;
+  }
+  render() {
+    const { index } = this.props.store;
+    if(!index){
+      return null;
+    }
+    console.log(this.paseTree(index))
+    return (
+      <Breadcrumb separator=">">
+        <Breadcrumb.Item>Home</Breadcrumb.Item>
+        <Breadcrumb.Item><a>Application Center</a></Breadcrumb.Item>
+        <Breadcrumb.Item><a>Application List</a></Breadcrumb.Item>
+        <Breadcrumb.Item>An Application</Breadcrumb.Item>
+      </Breadcrumb>
+    )
+  }
+}
 
 export default class Index extends PureComponent {
-
-  obj = {}
-
-  componentDidMount() {
-    //console.log(this.refs.view.props.children.props.children[0].props)
-  }
 
   render() {
     return (
@@ -33,8 +55,8 @@ export default class Index extends PureComponent {
               <ProjectList />
               <CompoList />
             </Sider>
-            <Layout id='center'>
-              <Content ref="view">
+            <Layout>
+              <Content>
                 <StoreContext.Consumer>
                   {
                     context => <Center store={context} />
@@ -42,8 +64,12 @@ export default class Index extends PureComponent {
                 </StoreContext.Consumer>
               </Content>
               <Footer>
-                Footer
-            </Footer>
+                <StoreContext.Consumer>
+                  {
+                    context => <TreeNode store={context} />
+                  }
+                </StoreContext.Consumer>
+              </Footer>
             </Layout>
             <Sider width={260}>
               <StoreContext.Consumer>

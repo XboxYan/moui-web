@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import EditView from './EditView';
 import { Input,message } from 'antd';
+const { TextArea } = Input;
 
 export default class Text extends PureComponent {
 
@@ -38,7 +39,7 @@ export default class Text extends PureComponent {
             <EditView {...this.props} onDoubleClick={this.onDoubleClick}>
                 {
                     contentEditable ?
-                        <Input autoFocus={true} onBlur={this.onBlur} defaultValue={text} />
+                        <TextArea autosize={true} onMouseDown={(ev)=>ev.stopPropagation()} autoFocus={true} onBlur={this.onBlur} defaultValue={text} />
                         :
                         <div className={multiline ? '' : 'els'}>{value||text}</div>
                 }

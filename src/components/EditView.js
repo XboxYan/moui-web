@@ -393,7 +393,7 @@ class EditView extends PureComponent {
         }
         //复制
         if (ev.keyCode === 67 && ev.ctrlKey) {
-            if(ev.target.tagName !== 'INPUT'){
+            if(ev.target.tagName !== 'TEXTAREA'){
                 const {innerView} = this.props;
                 if(innerView){
                     message.error('内部组件不允许被复制');
@@ -405,7 +405,7 @@ class EditView extends PureComponent {
         }
         //粘贴
         if (ev.keyCode === 86 && ev.ctrlKey) {
-            if(ev.target.tagName !== 'INPUT'){
+            if(ev.target.tagName !== 'TEXTAREA'){
                 this.props.onPaste && this.props.onPaste(this.mousePos,this.props.index);
                 return false
             }  
@@ -467,7 +467,7 @@ class EditView extends PureComponent {
             x:ev.clientX - left,
             y:ev.clientY - top
         }
-        this.props.onClick && this.props.onClick(this);
+        //this.props.onClick && this.props.onClick(this);
     }
 
     onDelete = (ev) => {

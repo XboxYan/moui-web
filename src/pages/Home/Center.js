@@ -5,7 +5,7 @@ import View from '../../components/View';
 import Text from '../../components/Text';
 import ListView from '../../components/ListView';
 import TabView from '../../components/TabView';
-import { ADD, CHANGE, MOVE, COPY, DELETE, ADDTAB } from '../../util/action';
+import { ADD, CHANGE, MOVE, COPY, DELETE, ADDTAB,DELTAB } from '../../util/action';
 
 const type = {
     'View': View,
@@ -56,10 +56,15 @@ export default class Center extends PureComponent {
         updata(_layout);
     }
 
-    addTab = (index) => () => {
+    addTab = (index) => (tabIndex) => {
         const { layout, updata } = this.props.store;
-        const _layout = ADDTAB(layout, index);
-        console.log(_layout.toJS())
+        const _layout = ADDTAB(layout, index, tabIndex);
+        updata(_layout);
+    }
+
+    delTab = (index) => (tabIndex) => {
+        const { layout, updata } = this.props.store;
+        const _layout = DELTAB(layout, index, tabIndex);
         updata(_layout);
     }
 
@@ -103,7 +108,7 @@ export default class Center extends PureComponent {
                 child = this.loop(item.child, key);
             }
         }   
-        const index = item.type + key;
+        const index = item.type +'>' + key;
         return (
             <Tag
                 {...item}
@@ -114,6 +119,7 @@ export default class Center extends PureComponent {
                 addCom={this.addCom}
                 addDatas={this.addDatas(item.type)}
                 addTab={this.addTab(index)}
+                delTab={this.delTab(index)}
                 onFocus={this.onFocus(index)}
                 onDrop={this.onDrop}
                 onDelete={this.onDelete(index)}

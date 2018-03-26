@@ -63,21 +63,20 @@ const COPY = (layout, target, item, pos) => {
     }
 }
 
-const ADDTAB = (layout,index) => {
+const ADDTAB = (layout,index,tabIndex) => {
     const O = layout;
     const tree = paseTree(index);
-    const tabs = O.getIn([...tree,'tabs']);
     const $tabs = Immutable.fromJS(defaultProps.TabView.tabs[0]);
-    const contents = O.getIn([...tree,'contents']);
     const $contents = Immutable.fromJS(defaultProps.TabView.contents[0]);
-    const e = tabs.indexOf(null);
-    if(e < 0){
-        const $O = O.updateIn([...tree,'tabs'],value=>value.push($tabs)).updateIn([...tree,'contents'],value=>value.push($contents));
-        return $O
-    }else{
-        const $O = O.setIn([...tree,'tabs',e],$tabs).setIn([...tree,'contents',e],$contents);
-        return $O
-    }
+    const $O = O.updateIn([...tree,'tabs'],value=>value.insert(tabIndex+1,$tabs)).updateIn([...tree,'contents'],value=>value.insert(tabIndex+1,$contents));
+    return $O
+}
+
+const DELTAB = (layout, index, tabIndex) => {
+    const O = layout;
+    const tree = paseTree(index);
+    const $O = O.removeIn([...tree,'tabs',tabIndex]).removeIn([...tree,'contents',tabIndex]);
+    return $O
 }
 
 const DELETE = (layout, index) => {
@@ -87,13 +86,19 @@ const DELETE = (layout, index) => {
     return $O
 }
 
+const fixType = (index,type) => {
+    const [_type,_index] = index.split('>');
+    return type+_index;
+}
+
 const MOVE = (layout, pos, target, index, path) => {
     const O = layout; 
+    const type = index.split('-')[0];
     let focusindex = index;
     const tree = paseTree(index);
     const current = O.getIn(tree);
     const $current = current.updateIn(path,value=>value.merge(Immutable.fromJS(pos)));
-    if (index.slice(0, -2) === target) {
+    if (index.slice(0, -2).split('>')[1] === target.split('>')[1]) {
         const $P = O.setIn(tree, $current);
         return [$P,focusindex]
     } else {
@@ -104,14 +109,14 @@ const MOVE = (layout, pos, target, index, path) => {
         const n = c.size;
         if (e < 0) {
             const $P = $O.updateIn([...target_tree, 'child'], value => value.push($current));
-            focusindex = target+'-'+n;
+            focusindex = fixType(target,type)+'-'+n;
             return [$P,focusindex]
         } else {
             const $P = $O.setIn([...target_tree, 'child', e], $current);
-            focusindex = target+'-'+e;
+            focusindex = fixType(target,type)+'-'+e;
             return [$P,focusindex]
         }
     }
 }
 
-export { ADD, CHANGE, MOVE, FOCUS, COPY, DELETE, ADDTAB };
+export { ADD, CHANGE, MOVE, FOCUS, COPY, DELETE, ADDTAB, DELTAB };
