@@ -32,12 +32,13 @@ img{vertical-align: middle;outline: 0;border: 0}
 .logo{ font-size: 24px;}
 .ant-layout-sider-zero-width-trigger{ background: royalblue; width: 30px; right: -30px;}
 .ant-layout-content{ display: flex; position: relative; transform:translate(0,0); overflow: auto; /*align-items: center; justify-content: center;*/ background: #ccc; }
-.ant-layout-content>.view{ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==") #fff;}
+.ant-layout-content>.view{ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==") #fff; margin: 50px;}
 .ant-layout-sider-zero-width-trigger{ z-index: 50;}
 .ant-menu{ overflow-x: hidden; }
 .ant-layout-sider-children{display: flex;flex-direction: column;}
 .ant-input{min-width: 150px;}
 .ant-layout-sider{ background: #fff;}
+.ant-layout-footer{ padding: 20px 40px;}
 .ant-collapse-content > .ant-collapse-content-box{ padding-bottom: 0;}
 .customPanelStyle{background: #fff;border-radius: 4px; margin-top:24px;border: 0;overflow: 'hidden'}
 .compItem{ cursor: default; white-space: nowrap; position: relative; overflow: hidden; user-select: none; padding: 5px; background: #f0f6ff; text-align: center; font-size: 12px;}
@@ -99,3 +100,4 @@ img{vertical-align: middle;outline: 0;border: 0}
 .radiogroup-small .ant-radio-inner:after{ left: 2px;top: 2px;}
 .radiogroup-small .ant-radio-wrapper{ flex: 1; margin-right: 0;}
 .radiogroup-small.ant-radio-group{ display: flex; flex: 1; margin-right: -8px;}
+.ant-breadcrumb-link[data-current=true] a{ font-style: italic;color: royalblue; pointer-events: none;}

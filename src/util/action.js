@@ -87,7 +87,7 @@ const DELETE = (layout, index) => {
 }
 
 const fixType = (index,type) => {
-    const [_type,_index] = index.split('>');
+    const _index = index.split('>')[1];
     return type+_index;
 }
 

@@ -303,7 +303,7 @@ class EditView extends PureComponent {
             util.removeClass(this.overObj, 'over');
             //console.log(this.overObj)
             const { x, y } = this.state;
-            this.props.dragEnd && this.props.dragEnd({ x, y },this.overObj.dataset.index);
+            this.props.dragEnd && this.props.dragEnd({ x, y },this.overObj.id);
         } else {
             const { x, y } = this.start;
             this.setState({
@@ -561,7 +561,7 @@ class EditView extends PureComponent {
                 onContextMenu={this.onMenu}
                 style={{ transform: `translate(${_x}px,${_y}px)`, ...sizeW, ...sizeH }}
                 tabIndex={0}
-                data-index={index}
+                id={index}
                 onMouseOver={this.hover}
                 onKeyDown={this.keydown}
                 onKeyUp={this.keymoveEnd}

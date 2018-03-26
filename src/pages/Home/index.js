@@ -9,29 +9,33 @@ const { Header, Footer, Sider, Content } = Layout;
 
 class TreeNode extends PureComponent {
   paseTree = (path) => {
-    //View>-   0-0
-    //View,Image
-    //View>-   0-0~0
-    //View,ListView,View
-    //0View0ListView0View
-    
     let tree = [];
     let [type,_path] = path.split('>-0');
-    let $path = (_path.replace(/-/g, 'View').replace(/~/g, 'ListView').replace(/@/g, 'TabView').replace(/#/g, 'TabView').replace(/[0-9]/g,',')) + type;
-    return $path;
+    let $path = ((_path.replace(/-/g, 'View').replace(/~/g, 'ListView').replace(/@/g, 'TabView').replace(/#/g, 'TabView').replace(/[0-9]/g,','))+type).split(',');
+    $path.forEach((el,i)=>{
+      tree.push({
+        name:i===0?'根节点':el,
+        index:el+'>-0'+ _path.slice(0, i*2)
+      })
+    })
+    return tree;
+  }
+  onFocus = (index) => () => {
+    const { focus } = this.props.store;
+    document.getElementById(index).focus();
+    focus(index);
   }
   render() {
     const { index } = this.props.store;
     if(!index){
       return null;
     }
-    console.log(this.paseTree(index))
+    const tree = this.paseTree(index);
     return (
       <Breadcrumb separator=">">
-        <Breadcrumb.Item>Home</Breadcrumb.Item>
-        <Breadcrumb.Item><a>Application Center</a></Breadcrumb.Item>
-        <Breadcrumb.Item><a>Application List</a></Breadcrumb.Item>
-        <Breadcrumb.Item>An Application</Breadcrumb.Item>
+        {
+          tree.map((el,i)=><Breadcrumb.Item key={i} data-current={i===tree.length-1}><a onClick={this.onFocus(el.index)}>{el.name}</a></Breadcrumb.Item>)
+        }
       </Breadcrumb>
     )
   }

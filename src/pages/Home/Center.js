@@ -48,6 +48,7 @@ export default class Center extends PureComponent {
         const { layout, updata } = this.props.store;
         const [_layout,focusindex] = MOVE(layout, pos, target, index, ['style']);
         updata(_layout,focusindex);
+        document.getElementById(focusindex).focus();
     }
 
     addCom = ({ type, x, y, index,dynamic }) => {
