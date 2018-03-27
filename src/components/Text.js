@@ -30,6 +30,10 @@ export default class Text extends PureComponent {
         this.props.onChange && this.props.onChange({text:value,editable:true},['props']);
     }
 
+    stop = (ev) => {
+        ev.stopPropagation();
+    }
+
     render() {
         const { contentEditable } = this.state;
         const { props:{text,multiline},datas:{value}} = this.props;
@@ -39,7 +43,7 @@ export default class Text extends PureComponent {
             <EditView {...this.props} onDoubleClick={this.onDoubleClick}>
                 {
                     contentEditable ?
-                        <TextArea autosize={true} onMouseDown={(ev)=>ev.stopPropagation()} autoFocus={true} onBlur={this.onBlur} defaultValue={text} />
+                        <TextArea autosize={true} onMouseDown={this.stop} autoFocus={true} onBlur={this.onBlur} defaultValue={text} />
                         :
                         <div className={multiline ? '' : 'els'}>{value||text}</div>
                 }

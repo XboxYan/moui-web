@@ -17,6 +17,7 @@
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-app-rewired eject"
   },
+  "proxy":"http://localhost:3000",
   "devDependencies": {
     "babel-plugin-import": "^1.6.5",
     "babel-plugin-transform-decorators": "^6.24.1",

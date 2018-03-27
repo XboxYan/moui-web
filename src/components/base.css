@@ -1,6 +1,4 @@
 .view{position: absolute; box-sizing: border-box; user-select: none;}
-.view.filter{ pointer-events: none;}
-.view.filter>.view{ pointer-events: all;}
 .view::before,.view::after{ white-space: pre; position: absolute; font-size: 12px; line-height: 16px; color: #fff; background: rgba(0,0,0,.8); border-radius: 3px; padding: 3px 5px;}
 .view[data-isdrag=true]::before,.view[data-editable=true]:focus::before{ top: -5px; right: -10px; transform: translateX(100%);  content:"x : "attr(data-pos-x)" px\Ay : "attr(data-pos-y)" px"; }
 .view[data-editable=true]:focus::after{ left: -5px; bottom: -10px; transform: translateY(100%); content:"w : "attr(data-res-w)" px\Ah : "attr(data-res-h)" px"; }
@@ -40,7 +38,7 @@
 [data-tips]:hover::before{visibility: visible;transform: translate(10px,10px);opacity: 1;}
 .ImageView .ViewInner{ overflow: hidden;}
 .ListView>.ViewInner>.view{ position: relative; opacity: .6; transition: .2s opacity; pointer-events:none;}
-.ListView>.ViewInner>.view:first-child{ pointer-events: all; opacity: 1;}
+.ListView>.ViewInner>.view:first-child{ pointer-events: inherit; opacity: 1;}
 .ListView>.ViewInner{ display: grid;}
 .TabView>.ViewInner{ display: flex; flex-direction: column; transition: .3s;}
 .view-tabs,.view-contents{ display: flex; position: relative;}
@@ -49,9 +47,9 @@
 .view-tabs-item{ position: relative;}
 .view-contents-item{ position: absolute; width: 100%; height: 100%;}
 .view-tabs[data-dynamic=true] .view-tabs-item{ opacity: .6; pointer-events: none; }
-.view-tabs[data-dynamic=true] .view-tabs-item:first-child{ opacity: 1; pointer-events: all; }
+.view-tabs[data-dynamic=true] .view-tabs-item:first-child{ opacity: 1; pointer-events: inherit; }
 .view-tabs[data-dynamic=false] .view-tabs-item{ cursor: pointer;}
-.view-contents-item[data-show=true]{ visibility: visible; pointer-events: all;}
+.view-contents-item[data-show=true]{ visibility: visible; pointer-events: inherit;}
 .view-contents-item[data-show=false]{ visibility: hidden; pointer-events: none;}
 .view-contents-item::after,.view-tabs-item::after{opacity: 0; pointer-events: none; content: attr(data-index); position: absolute; left: 0; bottom: 0; background: royalblue; color: #fff; padding: 0 5px; font-size: 12px; z-index: 10;}
 .TabView:hover .view-contents[data-dynamic=false] .view-contents-item::after,.TabView:hover .view-tabs[data-dynamic=false] .view-tabs-item::after{ opacity: 1;}
@@ -62,3 +60,4 @@
 .img-upload{ opacity: 0; visibility: hidden; position: absolute; font-size: 20px; left: 50%; top:50%; transform: translate(-50%,-50%);}
 .ImageView input{ position: absolute; display: none;}
 .ImageView:hover .img-upload{ opacity: 1; visibility: visible;}
+.img-loader{ position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); pointer-events: none;}

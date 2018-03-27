@@ -1,76 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { createPortal } from 'react-dom';
-import { Form, Input, message, Checkbox, Select, Icon, Spin, Tag, Alert } from 'antd';
-import Immutable from 'immutable';
+import { Form, Input, message, Select, Icon, Spin, Tag, Alert } from 'antd';
 import { CHANGE } from '../../util/action';
 import { request } from '../../util/A7';
 const Option = Select.Option;
-
-const datasourceList = [
-    {
-        "id": 1,
-        "name": "获取推荐列表",
-        "desc": "获取推荐列表(A7)",
-        "url": "A7://10.9.216.15:8080/getRelateList",
-        "createdAt": "2018-03-07T07:20:20.640Z",
-        "updatedAt": "2018-03-07T07:20:20.640Z",
-        "projectId": 1,
-        "params": [
-            {
-                "id": 1,
-                "name": "assetId",
-                "value": "assetId",
-                "createdAt": "2018-03-07T08:38:55.282Z",
-                "updatedAt": "2018-03-07T08:38:55.282Z",
-                "dataSourceId": 2
-            },
-            {
-                "id": 2,
-                "name": "当前页",
-                "value": "page",
-                "createdAt": "2018-03-07T08:38:55.282Z",
-                "updatedAt": "2018-03-07T08:38:55.282Z",
-                "dataSourceId": 2
-            },
-            {
-                "id": 3,
-                "name": "总页数",
-                "value": "pageSize",
-                "createdAt": "2018-03-07T08:38:55.282Z",
-                "updatedAt": "2018-03-07T08:38:55.282Z",
-                "dataSourceId": 2
-            }
-        ]
-    },
-    {
-        "id": 2,
-        "name": "获取推荐列表22",
-        "desc": "desc获取推荐列表22",
-        "url": "http://1.2.3.4/getRecommend22",
-        "createdAt": "2018-03-07T07:20:20.640Z",
-        "updatedAt": "2018-03-07T07:20:20.640Z",
-        "projectId": 1,
-        "params": [
-            {
-                "id": 5,
-                "name": "参数1",
-                "value": "params1",
-                "createdAt": "2018-03-07T08:38:55.282Z",
-                "updatedAt": "2018-03-07T08:38:55.282Z",
-                "dataSourceId": 2
-            },
-            {
-                "id": 6,
-                "name": "参数2",
-                "value": "params2",
-                "createdAt": "2018-03-07T08:38:55.282Z",
-                "updatedAt": "2018-03-07T08:38:55.282Z",
-                "dataSourceId": 2
-            }
-        ]
-    }
-]
-
 
 class PopResult extends PureComponent {
 
@@ -154,13 +87,13 @@ class DataParams extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            value: props.params.value,
+            value: props.data.value,
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.params.value !== this.props.params.value) {
-            this.setState({ value: nextProps.params.value });
+        if (nextProps.data.value !== this.props.data.value) {
+            this.setState({ value: nextProps.data.value });
         }
     }
 
@@ -169,13 +102,13 @@ class DataParams extends PureComponent {
     }
 
     render() {
-        const { data, params, onInput } = this.props
+        const { data, onInput } = this.props
         const { value } = this.state;
         return (
             <div className="data-params">
-                <span className="data-params-hd">{data.name}</span>
+                <span className="data-params-hd">{data.alias}</span>
                 <div className="data-params-bd">
-                    <Input addonBefore={data.value} size="small" onBlur={onInput} onChange={this.onChange} value={value} />
+                    <Input addonBefore={data.name} size="small" onBlur={onInput} onChange={this.onChange} value={value} />
                 </div>
             </div>
         )
@@ -204,21 +137,35 @@ export default class StylesPane extends PureComponent {
     fetchData = () => {
         const { fetching } = this.state;
         if (fetching) {
-            setTimeout(() => {
-                this.setState({ datasourceList, fetching: false })
-            }, 1000);
+            fetch(window.SERVER+'/datasource/1')
+            .then((data)=>data.json())
+            .then((data)=>{
+                if(data.success){
+                    this.setState({ 
+                        datasourceList:data.result, 
+                        fetching: false 
+                    })
+                }
+            })
         }
     }
 
     onChange = (value) => {
-        let params = [];
-        if (value) {
-            params = this.filterParams(this.datasourceItem(value).params);
+        const { datasource:{id} } = this.props.store.current;
+        if(value===id){
+            return false;
         }
+        let datasourceItem = this.finddatasourceItem(value);
         const { layout, updata, index } = this.props.store;
-        const d = { id: value || '', params };
-        const _layout = CHANGE(layout, index, d, ['datasource']);
-        this.setState({ datasource: d });
+        const d = value ? {
+            id: value, 
+            name:datasourceItem.name, 
+            desc:datasourceItem.desc,
+            type:datasourceItem.type, 
+            url:datasourceItem.url, 
+            params:this.filterParams(datasourceItem.params) 
+        } : {};
+        const _layout = CHANGE(layout, index, {datasource:d}, []);
         updata(_layout);
     }
 
@@ -235,10 +182,10 @@ export default class StylesPane extends PureComponent {
     }
 
     filterParams = (params) => {
-        return params.map(d => ({ name: d.value, id: d.id, value: '' }))
+        return params.map(d => ({ name: d.name, id: d.id, alias:d.alias, value:d.defaultVal }))
     }
 
-    datasourceItem = (id) => {
+    finddatasourceItem = (id) => {
         let datasourceItem = {};
         if (id) {
             const { datasourceList } = this.state;
@@ -247,45 +194,22 @@ export default class StylesPane extends PureComponent {
         return datasourceItem;
     }
 
-    onSelect = (d) => (e) => {
-        const { checked } = e.target;
-        const o = Immutable.fromJS(this.props.store.current.datasource);
-        const { layout, updata, index } = this.props.store;
-        if (!checked) {
-            const i = o.get('params').findIndex(m => m.get('id') === d.id);
-            const datasource = o.removeIn(['params', i]);
-            const _layout = CHANGE(layout, index, { ...datasource.toJS() }, ['datasource']);
-            updata(_layout);
-        } else {
-            const $item = Immutable.fromJS({ id: d.id, name: d.value, value: '' });
-            const datasource = o.updateIn(['params'], value => value.push($item));
-            const _layout = CHANGE(layout, index, { ...datasource.toJS() }, ['datasource']);
-            updata(_layout);
-        }
-    }
-
-    onInput = (d) => (e) => {
+    onInput = (i) => (e) => {
         const { value } = e.target;
-        const o = Immutable.fromJS(this.props.store.current.datasource);
-        const i = o.get('params').findIndex(m => m.get('id') === d.id);
-        const datasource = o.setIn(['params', i, 'value'], value);
         const { layout, updata, index } = this.props.store;
-        const _layout = CHANGE(layout, index, { ...datasource.toJS() }, ['datasource']);
+        const _layout = CHANGE(layout, index, { value }, ['datasource','params',i]);
         updata(_layout);
     }
 
-    include = (data, params) => {
-        return params.find((d) => d.id === data.id) || {};
-    }
-
-    onPreView = (url) => () => {
+    onPreView = (url,type) => () => {
         request({
-            url,
+            url:url+(type===0?'':'&page=1&pageSize=1'),
             success: (data) => {
                 if (data.success) {
+                    const result = type === 0 ? data.result:data.result[0]
                     this.setState({
                         show: true,
-                        fetchresult: data.result[0]
+                        fetchresult: result
                     });
                 } else {
                     message.error(data.desc);
@@ -307,12 +231,12 @@ export default class StylesPane extends PureComponent {
     render() {
         const { datasource, datas } = this.props.store.current;
         const { fetching, datasourceList, show, fetchresult } = this.state;
-        let id, params,datasourceItem,url;
+        let id, params,url,type;
         if(datasource){
             id = datasource.id;
+            type = datasource.type;
             params = datasource.params;
-            datasourceItem = this.datasourceItem(id) || {};
-            url = datasourceItem.url + this.parseParams(params);
+            url = datasource.url + this.parseParams(params);
         }
         return (
             <div className="pane">
@@ -341,7 +265,7 @@ export default class StylesPane extends PureComponent {
                                     <Select
                                         showSearch
                                         placeholder="选择数据来源"
-                                        value={fetching ? '加载中...' : datasourceItem.name}
+                                        value={fetching ? '加载中...' : id}
                                         optionFilterProp="children"
                                         notFoundContent={fetching ? <Spin size="small" /> : null}
                                         onChange={this.onChange}
@@ -351,6 +275,9 @@ export default class StylesPane extends PureComponent {
                                             datasourceList.map(d => <Option key={d.id} value={d.id}>{d.name}</Option>)
                                         }
                                     </Select>
+                                    {
+                                        id &&<Alert style={{marginTop:10}} message={datasource.desc||'暂无描述~'} type="info" />
+                                    }
                                 </Form>
                                 {
                                     id && !fetching &&
@@ -358,12 +285,12 @@ export default class StylesPane extends PureComponent {
                                         <Form className="form_pane">
                                             <h3 className="divider"><span>参数选择</span></h3>
                                             {
-                                                datasourceItem.params.map(d => <DataParams params={params} key={d.id} data={d} onInput={this.onInput(d)} />)
+                                                params.map((d,i) => <DataParams key={d.id} data={d} onInput={this.onInput(i)} />)
                                             }
                                         </Form>
                                         <Form className="form_pane">
                                             <div className="url-preview">
-                                                <h5 onClick={this.onPreView(url)}>请求预览</h5>
+                                                <h5 onClick={this.onPreView(url,type)}>请求预览</h5>
                                                 <span>{url}</span>
                                             </div>
                                         </Form>

@@ -45,6 +45,7 @@ export default class Center extends PureComponent {
     }
 
     dragEnd = (index) => (pos, target) => {
+        window.isremove = false;
         const { layout, updata } = this.props.store;
         const [_layout,focusindex] = MOVE(layout, pos, target, index, ['style']);
         updata(_layout,focusindex);
@@ -86,7 +87,33 @@ export default class Center extends PureComponent {
         updata(_layout);
     }
 
+    imgUpload = (ev,callbck) => {
+        const files = ev.target.files;
+        if (files.length > 0) {
+            let data = new FormData();
+            data.append('img', files[0]);
+            fetch(window.SERVER+'/image/1', {
+              method: 'POST',
+              body: data
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                if (res.success) {
+                  //const imgList = [...this.state.imgList];
+                  console.log(res)
+                  callbck&&callbck(res.result);
+                  //imgList.push(files[0].name);
+                  //this.setState({ imgList });
+                  //console.log(44444)
+                  message.success('图片上传成功~');
+                  //notify.show('上传图片成功~', "success", 2000);
+                }
+              })
+          }
+    }
+
     onDelete = (index) => () => {
+        window.isremove = true;
         const { layout, updata } = this.props.store;
         const _layout = DELETE(layout, index);
         updata(_layout,index.slice(0,-2));
@@ -126,6 +153,7 @@ export default class Center extends PureComponent {
                 onDelete={this.onDelete(index)}
                 onPaste={item.props.allowdrop?this.onPaste:this.onPasteTips}
                 onCopy={this.onCopy}
+                imgUpload={this.imgUpload}
                 onSet={this.onChange(index)}
                 key={index}>
                 {child}
