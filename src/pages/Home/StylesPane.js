@@ -169,14 +169,13 @@ class DataParams extends PureComponent {
     }
 
     render() {
-        const { data, params, onChange, onInput } = this.props
+        const { data, params, onInput } = this.props
         const { value } = this.state;
         return (
             <div className="data-params">
                 <span className="data-params-hd">{data.name}</span>
                 <div className="data-params-bd">
-                    <Input addonBefore={data.value} size="small" onBlur={onInput} onChange={this.onChange} disabled={!params.id} value={value} />
-                    <Checkbox onChange={onChange} checked={!!params.id} />
+                    <Input addonBefore={data.value} size="small" onBlur={onInput} onChange={this.onChange} value={value} />
                 </div>
             </div>
         )
@@ -243,7 +242,7 @@ export default class StylesPane extends PureComponent {
         let datasourceItem = {};
         if (id) {
             const { datasourceList } = this.state;
-            datasourceItem = datasourceList.filter((d) => d.id === id)[0];
+            datasourceItem = datasourceList.find((d) => d.id === id);
         }
         return datasourceItem;
     }
@@ -359,7 +358,7 @@ export default class StylesPane extends PureComponent {
                                         <Form className="form_pane">
                                             <h3 className="divider"><span>参数选择</span></h3>
                                             {
-                                                datasourceItem.params.map(d => <DataParams params={this.include(d, params)} key={d.id} data={d} onChange={this.onSelect(d)} onInput={this.onInput(d)} />)
+                                                datasourceItem.params.map(d => <DataParams params={params} key={d.id} data={d} onInput={this.onInput(d)} />)
                                             }
                                         </Form>
                                         <Form className="form_pane">
