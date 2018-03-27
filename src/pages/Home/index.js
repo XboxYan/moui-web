@@ -55,9 +55,9 @@ export default class Index extends PureComponent {
   setFull = () => {
     const { fullscreen } = this.state;
     if (fullscreen) {
-      document.exitFullscreen();
+      document.webkitCancelFullScreen();
     } else {
-      this.screen.requestFullscreen && this.screen.requestFullscreen();
+      this.screen.webkitRequestFullscreen&&this.screen.webkitRequestFullscreen();
     }
   }
 
@@ -116,7 +116,7 @@ export default class Index extends PureComponent {
     this.screen = document.getElementById('screen');
     document.addEventListener('keydown', this.onkeydown, false);
     document.addEventListener('keyup', this.onkeyup, false);
-    document.addEventListener('fullscreenchange', this.fullscreenchange, false)
+    document.addEventListener('webkitfullscreenchange', this.fullscreenchange, false)
   }
 
   render() {

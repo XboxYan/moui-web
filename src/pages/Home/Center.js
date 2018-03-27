@@ -5,7 +5,7 @@ import View from '../../components/View';
 import Text from '../../components/Text';
 import ListView from '../../components/ListView';
 import TabView from '../../components/TabView';
-import { ADD, CHANGE, MOVE, COPY, DELETE, ADDTAB,DELTAB } from '../../util/action';
+import { ADD, CHANGE, MOVE, COPY, DELETE, ADDTAB, DELTAB } from '../../util/action';
 
 const type = {
     'View': View,
@@ -25,21 +25,21 @@ export default class Center extends PureComponent {
     }
 
     onCopy = () => {
-        const {current} = this.props.store;
+        const { current } = this.props.store;
         message.success('组件已复制');
         this.copyData = current;
     }
 
-    onPaste = (pos,index) => {
-        if(this.copyData){
+    onPaste = (pos, index) => {
+        if (this.copyData) {
             const { layout, updata } = this.props.store;
-            const _layout = COPY(layout, index, this.copyData, {x:pos.x,y:pos.y});
+            const _layout = COPY(layout, index, this.copyData, { x: pos.x, y: pos.y });
             updata(_layout);
         }
     }
 
     onPasteTips = () => {
-        if(this.copyData){
+        if (this.copyData) {
             message.error('该组件内不允许置入其它组件');
         }
     }
@@ -47,14 +47,14 @@ export default class Center extends PureComponent {
     dragEnd = (index) => (pos, target) => {
         window.isremove = false;
         const { layout, updata } = this.props.store;
-        const [_layout,focusindex] = MOVE(layout, pos, target, index, ['style']);
-        updata(_layout,focusindex);
+        const [_layout, focusindex] = MOVE(layout, pos, target, index, ['style']);
+        updata(_layout, focusindex);
         document.getElementById(focusindex).focus();
     }
 
-    addCom = ({ type, x, y, index,dynamic }) => {
+    addCom = ({ type, x, y, index, dynamic }) => {
         const { layout, updata } = this.props.store;
-        const _layout = ADD(layout, index, type, { x, y },dynamic);
+        const _layout = ADD(layout, index, type, { x, y }, dynamic);
         updata(_layout);
     }
 
@@ -72,11 +72,11 @@ export default class Center extends PureComponent {
 
     addDatas = (type) => ({ name, value, index }) => {
         const { layout, updata } = this.props.store;
-        if(type==='Text'||type==='Image'){
-            const _layout = CHANGE(layout, index, {'props':name,value}, ['datas']);
+        if (type === 'Text' || type === 'Image') {
+            const _layout = CHANGE(layout, index, { 'props': name, value }, ['datas']);
             updata(_layout);
-        }else{
-            const _layout = CHANGE(layout, index, {'paramsDy':[{name,value}]}, ['datasource']);
+        } else {
+            const _layout = CHANGE(layout, index, { 'paramsDy': [{ name, value }] }, ['datasource']);
             updata(_layout);
         }
     }
@@ -87,56 +87,61 @@ export default class Center extends PureComponent {
         updata(_layout);
     }
 
-    imgUpload = (ev,callbck) => {
+    imgUpload = (ev, callbck) => {
         const files = ev.target.files;
         if (files.length > 0) {
             let data = new FormData();
             data.append('img', files[0]);
-            fetch(window.SERVER+'/image/1', {
-              method: 'POST',
-              body: data
+            fetch(window.SERVER + '/image/1', {
+                method: 'POST',
+                body: data
             })
-              .then((res) => res.json())
-              .then((res) => {
-                if (res.success) {
-                  //const imgList = [...this.state.imgList];
-                  console.log(res)
-                  callbck&&callbck(res.result);
-                  //imgList.push(files[0].name);
-                  //this.setState({ imgList });
-                  //console.log(44444)
-                  message.success('图片上传成功~');
-                  //notify.show('上传图片成功~', "success", 2000);
+            .then((res) => {
+                if (res.ok) {
+                    return res.json()
+                } else {
+                    return { success: false }
                 }
-              })
-          }
+            })
+            .then((res) => {
+                callbck && callbck(res);
+                if (res.success) {
+                    message.success('图片上传成功~');
+                } else {
+                    message.error('图片上传失败!');
+                }
+            })
+            .catch((error) => {
+                //message.error(error);
+            })
+        }
     }
 
     onDelete = (index) => () => {
         window.isremove = true;
         const { layout, updata } = this.props.store;
         const _layout = DELETE(layout, index);
-        updata(_layout,index.slice(0,-2));
+        updata(_layout, index.slice(0, -2));
         message.success('该组件已删除');
     }
 
-    loop = (data, m = '',s='-',innerView) => data.map((item, i) => {
+    loop = (data, m = '', s = '-', innerView) => data.map((item, i) => {
         if (!item) {
             return null
         }
         const Tag = type[item.type];
         let key = m + s + i;
         let child = null;
-        if(item.type==='ListView'){
-            child = this.loop(item.item, key,'~',true);
-        }else if(item.type==='TabView'){
-            child = [this.loop(item.tabs, key,'@',true),this.loop(item.contents, key,'#',true)];
-        }else{
+        if (item.type === 'ListView') {
+            child = this.loop(item.item, key, '~', true);
+        } else if (item.type === 'TabView') {
+            child = [this.loop(item.tabs, key, '@', true), this.loop(item.contents, key, '#', true)];
+        } else {
             if (item.child && item.child.length) {
                 child = this.loop(item.child, key);
             }
-        }   
-        const index = item.type +'>' + key;
+        }
+        const index = item.type + '>' + key;
         return (
             <Tag
                 {...item}
@@ -151,7 +156,7 @@ export default class Center extends PureComponent {
                 onFocus={this.onFocus(index)}
                 onDrop={this.onDrop}
                 onDelete={this.onDelete(index)}
-                onPaste={item.props.allowdrop?this.onPaste:this.onPasteTips}
+                onPaste={item.props.allowdrop ? this.onPaste : this.onPasteTips}
                 onCopy={this.onCopy}
                 imgUpload={this.imgUpload}
                 onSet={this.onChange(index)}

@@ -16,9 +16,11 @@ export default class Image extends PureComponent {
 
     imgUpload = (ev) => {
         this.setState({ isUpload: true })
-        this.props.imgUpload && this.props.imgUpload(ev, (data) => {
-            this.setState({ isUpload: false })
-            this.props.onChange && this.props.onChange({ src: window.SERVER + '/resource/1/1/img/' + data.saveName, srcId: data.id }, ['props']);
+        this.props.imgUpload && this.props.imgUpload(ev, (res) => {
+            if(res.success){
+                this.props.onChange && this.props.onChange({ src: window.SERVER + '/resource/1/1/img/' + res.result.saveName, srcId: res.result.id }, ['props']);
+            }
+            this.setState({ isUpload: false })  
         })
     }
 
@@ -27,10 +29,13 @@ export default class Image extends PureComponent {
         const { isUpload } = this.state;
         return (
             <EditView {...this.props} className="ImageView">
-                <img draggable={false} alt={value || alt} src={value || src} />
+                <img draggable={false} style={{opacity:isUpload?.5:1}} alt={value || alt} src={value || src} />
                 <input disabled={isUpload} onChange={this.imgUpload} type="file" accept="image/*" id={"xFile-" + index} />
-                <label className="img-upload" htmlFor={"xFile-" + index}><a><Icon type="upload" /></a></label>
-                <Spin className="img-loader" spinning={isUpload} />
+                <label className="img-upload" htmlFor={"xFile-" + index}>
+                    {
+                        isUpload?<Spin spinning={isUpload} />:<a><Icon type="upload" /></a>
+                    }
+                </label>  
             </EditView>
         );
     }

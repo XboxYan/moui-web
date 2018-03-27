@@ -36,7 +36,7 @@
 [data-tips]::before {content: attr(data-tips);left: 100%; top:-100%;border-radius: 3px;margin-bottom: 12px;padding: 6px 10px;line-height: 18px;background-color: #373c42;text-align: left;color: #fff;font-size: 12px;font-style: normal;font-family: 'microsoft yahei';white-space: nowrap;}
 [data-tips]::before{ position: absolute; visibility: hidden; transform: translate(20px,20px);opacity: 0;transition: .15s .15s;}
 [data-tips]:hover::before{visibility: visible;transform: translate(10px,10px);opacity: 1;}
-.ImageView .ViewInner{ overflow: hidden;}
+.ImageView .ViewInner{ overflow: hidden; background: #fff;}
 .ListView>.ViewInner>.view{ position: relative; opacity: .6; transition: .2s opacity; pointer-events:none;}
 .ListView>.ViewInner>.view:first-child{ pointer-events: inherit; opacity: 1;}
 .ListView>.ViewInner{ display: grid;}
@@ -57,7 +57,7 @@
 .tab-action a{ font-size: 20px; line-height: 0;}
 .tab-del:hover{ color: #ff4d4f;}
 .view-tabs-item:hover .tab-action[data-show=true]{  opacity: 1; visibility: visible;}
-.img-upload{ opacity: 0; visibility: hidden; position: absolute; font-size: 20px; left: 50%; top:50%; transform: translate(-50%,-50%);}
+.img-upload{ position: absolute; font-size: 20px; left: 50%; top:50%; transform: translate(-50%,-50%);}
+.img-upload>a{opacity: 0; visibility: hidden;}
 .ImageView input{ position: absolute; display: none;}
-.ImageView:hover .img-upload{ opacity: 1; visibility: visible;}
-.img-loader{ position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); pointer-events: none;}
+.ImageView:hover .img-upload>a{ opacity: 1; visibility: visible;}
