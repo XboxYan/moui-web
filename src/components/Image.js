@@ -19,6 +19,7 @@ export default class Image extends PureComponent {
         this.props.imgUpload && this.props.imgUpload(ev, (res) => {
             if(res.success){
                 this.props.onChange && this.props.onChange({ src: window.SERVER + '/resource/1/1/img/' + res.result.saveName, srcId: res.result.id }, ['props']);
+                this.props.onChange && this.props.onChange({ w: res.result.width, h: res.result.height }, ['style']);
             }
             this.setState({ isUpload: false })  
         })

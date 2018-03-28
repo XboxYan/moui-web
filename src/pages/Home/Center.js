@@ -98,9 +98,9 @@ export default class Center extends PureComponent {
             })
             .then((res) => {
                 if (res.ok) {
-                    return res.json()
-                } else {
-                    return { success: false }
+                    return res.json();
+                }else{
+                    return res
                 }
             })
             .then((res) => {
@@ -108,11 +108,8 @@ export default class Center extends PureComponent {
                 if (res.success) {
                     message.success('图片上传成功~');
                 } else {
-                    message.error('图片上传失败!');
+                    message.error('图片上传失败！'+ res.statusText);
                 }
-            })
-            .catch((error) => {
-                //message.error(error);
             })
         }
     }
@@ -131,14 +128,14 @@ export default class Center extends PureComponent {
         }
         const Tag = type[item.type];
         let key = m + s + i;
-        let child = null;
+        let children = null;
         if (item.type === 'ListView') {
-            child = this.loop(item.item, key, '~', true);
+            children = this.loop(item.item, key, '~', true);
         } else if (item.type === 'TabView') {
-            child = [this.loop(item.tabs, key, '@', true), this.loop(item.contents, key, '#', true)];
+            children = [this.loop(item.tabs, key, '@', true), this.loop(item.contents, key, '#', true)];
         } else {
-            if (item.child && item.child.length) {
-                child = this.loop(item.child, key);
+            if (item.children && item.children.length) {
+                children = this.loop(item.children, key);
             }
         }
         const index = item.type + '>' + key;
@@ -161,7 +158,7 @@ export default class Center extends PureComponent {
                 imgUpload={this.imgUpload}
                 onSet={this.onChange(index)}
                 key={index}>
-                {child}
+                {children}
             </Tag>
         )
     });

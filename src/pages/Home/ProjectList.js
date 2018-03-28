@@ -1,40 +1,178 @@
 import React, { PureComponent } from 'react';
-import { Menu, Icon } from 'antd';
+import { Menu, Icon, message, Spin, Modal } from 'antd';
+import { INIT } from '../../util/action';
+
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 
+
+const temp = (h) => ({
+  "type": "View",
+  "style": {
+    "w": h * 1280 / 720,
+    "h": h,
+  },
+  "props": {
+    "editable": false,
+    "allowdrop": true,
+    "disabled": true
+  },
+  "datasource": {},
+  "children": []
+})
+
 export default class ProjectList extends PureComponent {
-  handleClick = (e) => {
-    console.log('click ', e);
+
+  state = {
+    Propject: [],
+    pageIndex: ['1', '1']
   }
+
+  handleClick = (e) => {
+    const keyPath = e.keyPath;
+    const { pageIndex } = this.state;
+    if (pageIndex[0] !== keyPath[0] || pageIndex[1] !== keyPath[1]) {
+      const _this = this;
+      Modal.confirm({
+        title: '是否离开当前页',
+        content: '当前页面将会自动保存',
+        okText: '确认',
+        cancelText: '取消',
+        onOk() {
+          const { layout } = _this.props.store;
+          _this.savePage(pageIndex[0],layout.toJS()[0]);
+          _this.setState({ pageIndex: keyPath });
+          _this.initPage(keyPath[0]);
+        }
+      });
+    }
+  } 
+
+  fetchProject = async () => {
+    return await fetch(window.SERVER + '/project')
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response;
+        }
+      })
+      .then((data) => {
+        if (data.success) {
+          return data.result;
+        } else {
+          message.error(data.statusText);
+        }
+      })
+  }
+
+  fetchPage = async (id) => {
+    return await fetch(window.SERVER + '/page/' + id)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response;
+        }
+      })
+      .then((data) => {
+        if (data.success) {
+          return data.result;
+        } else {
+          message.error(data.statusText);
+        }
+      })
+  }
+
+  savePage = (id, data) => {
+    fetch(window.SERVER + '/layout/' + id, {
+      method: 'PUT',
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response;
+        }
+      })
+      .then((data) => {
+        if (data.success) {
+          message.success('保存布局成功~');
+        } else {
+          message.error('保存布局失败！' + data.statusText);
+        }
+      })
+  }
+
+  initPage = (id) => {
+    fetch(window.SERVER + '/layout/' + id)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response;
+        }
+      })
+      .then((data) => {
+        if (data.success) {
+          const { updata,focus } = this.props.store;
+          let _layout;
+          if (data.result && data.result.type) {
+            _layout = INIT(data.result);
+            message.success('载入布局完成~');
+          } else {
+            const _temp = temp(720);
+            _layout = INIT(_temp);
+            message.success('初始化布局完成~');
+            this.savePage(id, _temp);
+          }
+          focus(null);
+          updata(_layout);
+        } else {
+          message.error(data.statusText);
+        }
+      })
+  }
+
+  async componentDidMount() {
+    let Propject = await this.fetchProject()||[];
+    for (let i = 0; i < Propject.length; i++) {
+      Propject[i].pages = await this.fetchPage(Propject[i].id);
+    }
+    this.setState({ Propject });
+    const { pageIndex } = this.state;
+    this.initPage(pageIndex[0])
+  }
+
   render() {
+    const { Propject, pageIndex } = this.state;
+    if (Propject.length === 0) {
+      return <div className="project-loader"><Spin tip="正在加载工程" /></div>
+    }
     return (
       <Menu
         onClick={this.handleClick}
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
         mode="inline"
+        defaultSelectedKeys={[pageIndex[0]]}
+        defaultOpenKeys={[pageIndex[1]]}
+        selectedKeys={[pageIndex[0]]}
       >
-        <SubMenu key="sub1" title={<span><Icon type="laptop" /><span>项目一</span></span>}>
-          <MenuItemGroup key="g1" title="首页">
-            <Menu.Item key="1">页面 1</Menu.Item>
-            <Menu.Item key="2">页面 2</Menu.Item>
-          </MenuItemGroup>
-          <MenuItemGroup key="g2" title="详情页">
-            <Menu.Item key="3">Option 3</Menu.Item>
-            <Menu.Item key="4">Option 4</Menu.Item>
-          </MenuItemGroup>
-        </SubMenu>
-        <SubMenu key="sub2" title={<span><Icon type="laptop" /><span>项目二</span></span>}>
-          <MenuItemGroup key="g1" title="首页">
-            <Menu.Item key="5">页面 1</Menu.Item>
-            <Menu.Item key="6">页面 2</Menu.Item>
-          </MenuItemGroup>
-          <MenuItemGroup key="g2" title="详情页">
-            <Menu.Item key="7">Option 3</Menu.Item>
-            <Menu.Item key="8">Option 4</Menu.Item>
-          </MenuItemGroup>
-        </SubMenu>
+        {
+          Propject.map(el => (
+            <SubMenu key={el.id} title={<span><Icon type="laptop" /><span>{el.name}</span></span>}>
+              {
+
+                el.pages.map(item => (
+                  <Menu.Item key={item.id}>{item.name}</Menu.Item>
+                ))
+              }
+            </SubMenu>
+          ))
+        }
       </Menu>
     );
   }

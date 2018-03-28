@@ -101,9 +101,10 @@ img{vertical-align: middle;outline: 0;border: 0}
 .pre-list li{ list-style: none; cursor: -webkit-grab; padding: 5px; font-size: 12px; color: rgba(0, 0, 0, 0.85)}
 .pre-list li:hover{ background: #f0f6ff; color: royalblue;}
 .pre-list li strong{ background: #999; color: #fff; font-weight: normal; padding: 1px 4px; border-radius: 2px; margin-right: 5px;}
-.tagView p{ padding: 10px; background: #f0f6ff; margin-top: 10px;}
+.tagView p{ padding: 10px; background: #f0f6ff; margin-top: 10px; word-wrap: break-word;}
 .radiogroup-small .ant-radio-inner{ top: -2px; width: 14px;height: 14px;}
 .radiogroup-small .ant-radio-inner:after{ left: 2px;top: 2px;}
 .radiogroup-small .ant-radio-wrapper{ flex: 1; margin-right: 0;}
 .radiogroup-small.ant-radio-group{ display: flex; flex: 1; margin-right: -8px;}
 .ant-breadcrumb-link[data-current=true] a{ font-style: italic;color: royalblue; pointer-events: none;}
+.project-loader{ padding: 40px 0 0 0; text-align: center;}

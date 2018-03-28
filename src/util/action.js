@@ -3,15 +3,15 @@ import defaultProps from './defaultProps';
 
 const paseTree = (path) => {
     //View-0-1~0
-    //View-child-0-child-1-item-0
-    //[0,child,1,item,0]
-    return path.replace(/-/g, '-child-').replace(/~/g, '-item-').replace(/@/g, '-tabs-').replace(/#/g, '-contents-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
+    //View-children-0-children-1-item-0
+    //[0,children,1,item,0]
+    return path.replace(/-/g, '-children-').replace(/~/g, '-item-').replace(/@/g, '-tabs-').replace(/#/g, '-contents-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
 }
 
 const ADD = (layout, index, type, { x, y },dynamic) => {
     const O = layout;
     const tree = paseTree(index);
-    const c = O.getIn([...tree, 'child']);
+    const c = O.getIn([...tree, 'children']);
     const e = c.indexOf(null);
     const $dynamic = dynamic?{dynamic:!!dynamic}:{};
     const Com = Immutable.fromJS({
@@ -23,13 +23,13 @@ const ADD = (layout, index, type, { x, y },dynamic) => {
         contents: defaultProps[type].contents||null,
         datasource: defaultProps[type].datasource||null,
         datas: defaultProps[type].datas||null,
-        child: []
+        children: []
     })
     if(e < 0){
-        const $O = O.updateIn([...tree, 'child'], value => value.push(Com));
+        const $O = O.updateIn([...tree, 'children'], value => value.push(Com));
         return $O
     }else{
-        const $O = O.setIn([...tree, 'child', e], Com);
+        const $O = O.setIn([...tree, 'children', e], Com);
         return $O
     }
 }
@@ -38,6 +38,11 @@ const FOCUS = (layout, index) => {
     const O = layout;
     const tree = paseTree(index);
     const $O = O.getIn(tree);
+    return $O;
+}
+
+const INIT = (layout) => {
+    const $O = Immutable.fromJS([layout]);
     return $O;
 }
 
@@ -52,13 +57,13 @@ const COPY = (layout, target, item, pos) => {
     const O = layout;
     const tree = paseTree(target);
     const $current = Immutable.fromJS(item).updateIn(['style'],value=>value.merge(Immutable.fromJS(pos)));
-    const c = O.getIn([...tree, 'child']);
+    const c = O.getIn([...tree, 'children']);
     const e = c.indexOf(null);
     if(e < 0){
-        const $O = O.updateIn([...tree,'child'],value=>value.push($current))
+        const $O = O.updateIn([...tree,'children'],value=>value.push($current))
         return $O
     }else{
-        const $O = O.setIn([...tree, 'child', e], $current);
+        const $O = O.setIn([...tree, 'children', e], $current);
         return $O
     }
 }
@@ -104,19 +109,19 @@ const MOVE = (layout, pos, target, index, path) => {
     } else {
         const target_tree = paseTree(target);
         const $O = O.setIn(tree, null);
-        const c = $O.getIn([...target_tree, 'child']);
+        const c = $O.getIn([...target_tree, 'children']);
         const e = c.indexOf(null);
         const n = c.size;
         if (e < 0) {
-            const $P = $O.updateIn([...target_tree, 'child'], value => value.push($current));
+            const $P = $O.updateIn([...target_tree, 'children'], value => value.push($current));
             focusindex = fixType(target,type)+'-'+n;
             return [$P,focusindex]
         } else {
-            const $P = $O.setIn([...target_tree, 'child', e], $current);
+            const $P = $O.setIn([...target_tree, 'children', e], $current);
             focusindex = fixType(target,type)+'-'+e;
             return [$P,focusindex]
         }
     }
 }
 
-export { ADD, CHANGE, MOVE, FOCUS, COPY, DELETE, ADDTAB, DELTAB };
+export { INIT, ADD, CHANGE, MOVE, FOCUS, COPY, DELETE, ADDTAB, DELTAB };

@@ -2,39 +2,10 @@ import React, { PureComponent } from 'react';
 import Immutable from 'immutable';
 import { FOCUS } from '../util/action';
 
-window.SERVER = "http://localhost:3000";
+window.SERVER = "";
 
 const initialState = {
-    layout: Immutable.fromJS([
-        {
-            type: 'View',
-            style: {
-                w: 1280,
-                h: 720,
-            },
-            props: {
-                editable: false,
-                allowdrop: true,
-                disabled: true
-            },
-            datasource: {
-                "id": 1,
-                "name": "栏目列表",
-                "desc": "根据父栏目获取子栏目列表",
-                "url": "A7://10.9.216.15:8080/getColumns",
-                "type": 1,
-                "params": [
-                    {
-                        "id": 4,
-                        "alias": "父栏目id",
-                        "name": "columnId",
-                        "value": "MANU6500842333",
-                    }
-                ]
-            },
-            child: []
-        }
-    ]),
+    layout: Immutable.fromJS([]),
     index: null
 };
 

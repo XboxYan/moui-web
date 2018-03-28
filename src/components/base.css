@@ -57,7 +57,7 @@
 .tab-action a{ font-size: 20px; line-height: 0;}
 .tab-del:hover{ color: #ff4d4f;}
 .view-tabs-item:hover .tab-action[data-show=true]{  opacity: 1; visibility: visible;}
-.img-upload{ position: absolute; font-size: 20px; left: 50%; top:50%; transform: translate(-50%,-50%);}
-.img-upload>a{opacity: 0; visibility: hidden;}
+.img-upload{ position: absolute; font-size: 18px; left: 50%; top:50%; transform: translate(-50%,-50%);}
+.img-upload>a{opacity: 0; width: 30px; height: 30px; border: 1px solid #d9d9d9; display: inline-block; background: #fff; border-radius: 15px;text-align: center;line-height: 28px;  visibility: hidden;}
 .ImageView input{ position: absolute; display: none;}
 .ImageView:hover .img-upload>a{ opacity: 1; visibility: visible;}

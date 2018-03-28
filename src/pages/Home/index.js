@@ -57,7 +57,7 @@ export default class Index extends PureComponent {
     if (fullscreen) {
       document.webkitCancelFullScreen();
     } else {
-      this.screen.webkitRequestFullscreen&&this.screen.webkitRequestFullscreen();
+      this.screen.webkitRequestFullscreen && this.screen.webkitRequestFullscreen();
     }
   }
 
@@ -133,7 +133,11 @@ export default class Index extends PureComponent {
               collapsedWidth={0}
               collapsible={true}
             >
-              <ProjectList />
+              <StoreContext.Consumer>
+                {
+                  context => <ProjectList store={context} />
+                }
+              </StoreContext.Consumer>
               <CompoList />
             </Sider>
             <Layout>

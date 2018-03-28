@@ -15,6 +15,10 @@ export default {
         datasource:{}
     },
     'Image':{
+        style:{
+            w:100,
+            h:100,
+        },
         props:{
             allowdrop:false,
             editable:true,
@@ -25,6 +29,11 @@ export default {
         datas: {}
     },
     'Text':{
+        style:{
+            w:56,
+            h:21,
+            fontSize:14
+        },
         props:{
             allowdrop:false,
             editable:true,
@@ -58,7 +67,7 @@ export default {
                 disabled: true
             },
             datasource: {},
-            child: []
+            children: []
         }],
         datasource:{}
     },
@@ -89,7 +98,7 @@ export default {
                 disabled: true
             },
             datasource: {},
-            child: []
+            children: []
         }],
         contents: [{
             type: 'View',
@@ -102,7 +111,7 @@ export default {
                 disabled: true
             },
             datasource: {},
-            child: []
+            children: []
         }],
     }
 }

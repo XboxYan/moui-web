@@ -36,9 +36,14 @@ const A7 = {
             data: function (p) {
                 return '<GetItemData titleProviderId="' + p.providerId + '" titleAssetId="' + p.assetId + '"' + this.common() + '/>'
             },
-            parse: function (datas, ret) {
+            parse: function (datas, ret, prefix) {
                 const det = datas.selectableItem;
                 ret.result = det || {};
+                var item = ret.result;
+                if (item.imageList && item.imageList.length > 0) {
+                    item.poster = prefix + item.imageList[0].posterUrl;
+                }
+                item.imageList = null;
             }
         },
         getRelateList: {
@@ -46,9 +51,16 @@ const A7 = {
             data: function (p) {
                 return '<GetAssociatedFolderContents mergeTV="1" quickId="' + p.assetId + '" targetLabel="A" associatedType="4"' + this._pageCommon(p.page, p.pageSize) + '/>'
             },
-            parse: function (datas, ret) {
+            parse: function (datas, ret, prefix) {
                 const list = datas.selectableItem;
                 ret.result = list || [];
+                for (var i = 0; i < ret.result.length; i++) {
+                    var item = ret.result[i];
+                    if (item.imageList && item.imageList.length > 0) {
+                        item.poster = prefix + item.imageList[0].posterUrl;
+                    }
+                    item.imageList = null;
+                }
             }
         }
     },
@@ -128,7 +140,7 @@ const A7 = {
 }
 
 // request({
-//     url: 'A7://10.9.216.15:8080/getColumns?columnId=MANU69003&page=1&pageSize=10',
+//     url: 'A7://10.9.216.15:8080/getColumns?columnId=MANU6500842&page=1&pageSize=10',
 //     success: function (datas) { console.log(datas); }
 // })
 // request({
@@ -160,10 +172,7 @@ function ajaxM(obj) {
         return;
     }
     const _url = obj.url;
-    var xmlhttp = null;
-    if (window.XMLHttpRequest) {
-        xmlhttp = new XMLHttpRequest();
-    }
+    var xmlhttp = new XMLHttpRequest();    //这里扩展兼容性
     var type = (obj.type || 'GET').toUpperCase();
     const _self = this;
     const cacheUrl = obj.origin || _url;

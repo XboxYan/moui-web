@@ -17,7 +17,7 @@
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-app-rewired eject"
   },
-  "proxy":"http://localhost:3000",
+  "proxy":"http://localhost:1000",
   "devDependencies": {
     "babel-plugin-import": "^1.6.5",
     "babel-plugin-transform-decorators": "^6.24.1",
@@ -25,5 +25,5 @@
     "react-app-rewire-less": "^2.1.0",
     "react-app-rewired": "^1.4.1"
   },
-  "homepage": "http://www.xboxyan.com/moui-web/build/"
+  "homepage": "http://localhost:1000/main"
 }

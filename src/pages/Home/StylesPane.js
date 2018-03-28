@@ -138,13 +138,23 @@ export default class StylesPane extends PureComponent {
         const { fetching } = this.state;
         if (fetching) {
             fetch(window.SERVER+'/datasource/1')
-            .then((data)=>data.json())
             .then((data)=>{
+                if (data.ok) {
+                    return data.json();
+                }else{
+                    return data;
+                }
+            })
+            .then((data)=>{
+                this.setState({ 
+                    fetching: false 
+                })
                 if(data.success){
                     this.setState({ 
                         datasourceList:data.result, 
-                        fetching: false 
                     })
+                }else{
+                    message.error(data.statusText);
                 }
             })
         }
