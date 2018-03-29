@@ -99,7 +99,7 @@ const ResizeW = (props) => {
         if (Math.abs(y + h - _h) < 10) {
             h = _h - y;
         }
-        props.resize({ x, y, w, h });
+        props.resize({ x, y, w, h:parseInt(h,10) });
     }
 
     const resizeEnd = (ev) => {
@@ -200,9 +200,9 @@ class EditView extends PureComponent {
             return false;
         }
         let target = targets[index];
-        const { left, top, width, height } = target.getBoundingClientRect();
+        const { left, top } = target.getBoundingClientRect();
         if (this.state.editable) {
-            this.setState({ w: width, h: height })
+            //this.setState({ w: width, h: height })
             ev.stopPropagation();
         } else {
             return false;
@@ -364,7 +364,7 @@ class EditView extends PureComponent {
             if (source === 'left') {
                 const type = ev.dataTransfer.getData('type');
                 const dynamic = ev.dataTransfer.getData('dynamic');
-                this.props.addCom&&this.props.addCom({type,x,y,index,dynamic})
+                this.props.addCom&&this.props.addCom({type,x:parseInt(x,10),y:parseInt(y,10),index,dynamic})
             }
             if (source === 'right') {
                 const name = ev.dataTransfer.getData('name');
@@ -534,6 +534,9 @@ class EditView extends PureComponent {
                     break;
                 case 'h':
                     STYLE['height'] = style[name];
+                    break;
+                case 'backgroundImage':
+                    STYLE['backgroundImage'] = style[name]==='unset'?'none':`url(${style[name]})`;
                     break;
                 default:
                     STYLE[name] = style[name];

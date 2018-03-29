@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon, Spin } from 'antd';
+import { Icon, Spin, message } from 'antd';
 import EditView from './EditView';
 
 export default class Image extends PureComponent {
@@ -10,19 +10,44 @@ export default class Image extends PureComponent {
 
     componentWillUnmount() {
         if (window.isremove) {
-            console.log(this.props.index)
+            //console.log(this.props.index)
         }
     }
 
-    imgUpload = (ev) => {
+
+    imgUpload = (ev, callbck) => {
         this.setState({ isUpload: true })
-        this.props.imgUpload && this.props.imgUpload(ev, (res) => {
-            if(res.success){
-                this.props.onChange && this.props.onChange({ src: window.SERVER + '/resource/1/1/img/' + res.result.saveName, srcId: res.result.id }, ['props']);
-                this.props.onChange && this.props.onChange({ w: res.result.width, h: res.result.height }, ['style']);
-            }
-            this.setState({ isUpload: false })  
-        })
+        const { pageIndex } = this.props;
+        const files = ev.target.files;
+        if (files.length > 0) {
+            let data = new FormData();
+            data.append('img', files[0]);
+            fetch(window.SERVER + '/image/' + pageIndex[0], {
+                method: 'POST',
+                body: data
+            })
+            .then((res) => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    return res
+                }
+            })
+            .then((res) => {
+                if (res.success) {
+                    const src = window.SERVER + `/resource/${pageIndex[1]}/${pageIndex[0]}/img/` + res.result.saveName;
+                    const srcId = res.result.id;
+                    const w = res.result.width;
+                    const h = res.result.height;
+                    this.props.onChange && this.props.onChange({ src, srcId }, ['props']);
+                    this.props.onChange && this.props.onChange({ w, h }, ['style']);
+                    message.success('图片上传成功~');
+                } else {
+                    message.error('图片上传失败！' + res.statusText);
+                }
+                this.setState({ isUpload: false })
+            })
+        }
     }
 
     render() {
@@ -30,13 +55,13 @@ export default class Image extends PureComponent {
         const { isUpload } = this.state;
         return (
             <EditView {...this.props} className="ImageView">
-                <img draggable={false} style={{opacity:isUpload?.5:1}} alt={value || alt} src={value || src} />
+                <img draggable={false} style={{ opacity: isUpload ? .5 : 1 }} alt={value || alt} src={value || src} />
                 <input disabled={isUpload} onChange={this.imgUpload} type="file" accept="image/*" id={"xFile-" + index} />
                 <label className="img-upload" htmlFor={"xFile-" + index}>
                     {
-                        isUpload?<Spin spinning={isUpload} />:<a><Icon type="upload" /></a>
+                        isUpload ? <Spin spinning={isUpload} /> : <a><Icon type="upload" /></a>
                     }
-                </label>  
+                </label>
             </EditView>
         );
     }

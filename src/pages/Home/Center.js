@@ -76,8 +76,8 @@ export default class Center extends PureComponent {
             const _layout = CHANGE(layout, index, { 'props': name, value }, ['datas']);
             updata(_layout);
         } else {
-            const _layout = CHANGE(layout, index, { 'paramsDy': [{ name, value }] }, ['datasource']);
-            updata(_layout);
+            //const _layout = CHANGE(layout, index, { 'paramsDy': [{ name, value }] }, ['datasource']);
+            //updata(_layout);
         }
     }
 
@@ -85,34 +85,7 @@ export default class Center extends PureComponent {
         const { layout, updata } = this.props.store;
         const _layout = CHANGE(layout, index, key_value, type);
         updata(_layout);
-    }
-
-    imgUpload = (ev, callbck) => {
-        const files = ev.target.files;
-        if (files.length > 0) {
-            let data = new FormData();
-            data.append('img', files[0]);
-            fetch(window.SERVER + '/image/1', {
-                method: 'POST',
-                body: data
-            })
-            .then((res) => {
-                if (res.ok) {
-                    return res.json();
-                }else{
-                    return res
-                }
-            })
-            .then((res) => {
-                callbck && callbck(res);
-                if (res.success) {
-                    message.success('图片上传成功~');
-                } else {
-                    message.error('图片上传失败！'+ res.statusText);
-                }
-            })
-        }
-    }
+    }    
 
     onDelete = (index) => () => {
         window.isremove = true;
@@ -139,6 +112,7 @@ export default class Center extends PureComponent {
             }
         }
         const index = item.type + '>' + key;
+        const { pageIndex } = this.props.store;
         return (
             <Tag
                 {...item}
@@ -146,6 +120,7 @@ export default class Center extends PureComponent {
                 onChange={this.onChange(index)}
                 innerView={innerView}
                 index={index}
+                pageIndex={pageIndex}
                 addCom={this.addCom}
                 addDatas={this.addDatas(item.type)}
                 addTab={this.addTab(index)}
@@ -155,7 +130,6 @@ export default class Center extends PureComponent {
                 onDelete={this.onDelete(index)}
                 onPaste={item.props.allowdrop ? this.onPaste : this.onPasteTips}
                 onCopy={this.onCopy}
-                imgUpload={this.imgUpload}
                 onSet={this.onChange(index)}
                 key={index}>
                 {children}

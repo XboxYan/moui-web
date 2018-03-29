@@ -6,7 +6,8 @@ window.SERVER = "";
 
 const initialState = {
     layout: Immutable.fromJS([]),
-    index: null
+    index: null,
+    pageIndex:['1', '1']
 };
 
 const StoreContext = React.createContext({
@@ -27,8 +28,11 @@ export default class StoreProvider extends PureComponent {
     focus = (index) => {
         this.setState({ index });
     }
+    jumpPage = (pageIndex) => {
+        this.setState({ pageIndex });
+    }
     render() {
-        const { layout, index } = this.state;
+        const { layout, index, pageIndex } = this.state;
         const current = index ? FOCUS(layout, index).toJS() : null;
         return (
             <StoreContext.Provider
@@ -37,7 +41,9 @@ export default class StoreProvider extends PureComponent {
                     updata: this.updata,
                     current: current,
                     index: index,
-                    focus: this.focus
+                    focus: this.focus,
+                    pageIndex:pageIndex,
+                    jumpPage: this.jumpPage,
                 }}
             >
                 {this.props.children}

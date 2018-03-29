@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Row, Col, Radio, Input, Slider, InputNumber, Checkbox, Button, Select } from 'antd';
+import { Form, Row, Col, Radio, Input, Slider, InputNumber, Checkbox, Button, Select, message } from 'antd';
 import ColorPicker from 'rc-color-picker';
 import { CHANGE } from '../../util/action';
 const FormItem = Form.Item;
@@ -10,7 +10,37 @@ const RadioGroup = Radio.Group;
 
 
 export default class PropsPane extends PureComponent {
-    static defaultProps = {
+
+    imgUpload = (ev, callbck) => {
+        //this.setState({ isUpload: true })
+        const { pageIndex } = this.props.store;
+        const files = ev.target.files;
+        if (files.length > 0) {
+            let data = new FormData();
+            data.append('img', files[0]);
+            fetch(window.SERVER + '/image/' + pageIndex[0], {
+                method: 'POST',
+                body: data
+            })
+            .then((res) => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    return res
+                }
+            })
+            .then((res) => {
+                if (res.success) {
+                    const src = window.SERVER + `/resource/${pageIndex[1]}/${pageIndex[0]}/img/` + res.result.saveName;
+                    //const srcId = res.result.id;
+                    this.onChange({ backgroundImage:src });
+                    message.success('图片上传成功~');
+                } else {
+                    message.error('图片上传失败！' + res.statusText);
+                }
+                //this.setState({ isUpload: false })
+            })
+        }
     }
 
     onChange = (key_value) => {
@@ -36,13 +66,22 @@ export default class PropsPane extends PureComponent {
         return hex;
     }
 
+    colorName = (color) => {
+        let className = "";
+        if (color === 'unset') {
+            className += " color-none";
+        }
+        return className;
+    }
+
     render() {
         const { style: {
             x = 0,
             y = 0,
             w,
             h,
-            backgroundColor = '#fff',
+            backgroundColor = 'unset',
+            backgroundImage = 'unset',
             opacity = 1,
             borderWidth = 0,
             borderStyle = 'unset',
@@ -70,7 +109,7 @@ export default class PropsPane extends PureComponent {
                 tabAlign,
                 dynamic
         },
-        type
+            type
      } = this.props.store.current;
         return (
             <div className="pane">
@@ -95,20 +134,25 @@ export default class PropsPane extends PureComponent {
                     </Row>
                 </Form>
                 {
-                    type !== 'Text'&&               
+                    type !== 'Text' &&
                     <Form className="form_pane">
                         <h3 className="divider"><span>外观</span></h3>
                         {
-                            type !== 'Image'&&
+                            type !== 'Image' &&
                             <FormItem label="填充">
                                 <Button size="small">
                                     <ColorPicker
-                                        className="colorPicker"
+                                        className={"colorPicker" + this.colorName(backgroundColor)}
                                         animation="slide-up"
                                         color={backgroundColor}
                                         onChange={(colors) => this.onChange({ backgroundColor: colors.color + this.toAlpha(colors.alpha) })}
                                     />
                                 </Button>
+                                <Button className={"img-load-btn" + this.colorName(backgroundImage)} size="small" style={{ marginLeft: 10 }}>
+                                    <input onChange={this.imgUpload} type="file" accept="image/*" id={"xFile-img"} />
+                                    <label htmlFor={"xFile-img"} style={{backgroundImage:backgroundImage==='unset'?'none':`url(${backgroundImage})`}} />
+                                </Button>
+                                <a className="color-reset-btn" onClick={() => this.onChange({ backgroundColor: 'unset',backgroundImage: 'unset' })}>清除</a>
                             </FormItem>
                         }
                         <FormItem label="边框">
@@ -140,7 +184,7 @@ export default class PropsPane extends PureComponent {
                     </Form>
                 }
                 {
-                    type === 'Text'&&                
+                    type === 'Text' &&
                     <Form className="form_pane">
                         <h3 className="divider"><span>文字</span></h3>
                         <Row gutter={10}>
@@ -190,7 +234,7 @@ export default class PropsPane extends PureComponent {
                 }
                 {
                     type === "ListView"
-                    &&             
+                    &&
                     <Form className="form_pane">
                         <h3 className="divider"><span>列表和栅格</span></h3>
                         <Row gutter={10}>
@@ -217,9 +261,9 @@ export default class PropsPane extends PureComponent {
                 }
                 {
                     type === "TabView"
-                    &&   
+                    &&
                     <Form className="form_pane">
-                        <h3 className="divider"><span>标签({dynamic?"动":"静"}态)</span></h3>
+                        <h3 className="divider"><span>标签({dynamic ? "动" : "静"}态)</span></h3>
                         <Row gutter={10}>
                             <Col span={24}>
                                 <FormItem label="位置">
@@ -232,7 +276,7 @@ export default class PropsPane extends PureComponent {
                                 </FormItem>
                             </Col>
                             <Col span={12}>
-                                <FormItem label="标签W"><InputNumber size="small" min={0} value={tabWidth} onChange={(value) => this.onSet({ tabWidth: value })} /></FormItem>                      
+                                <FormItem label="标签W"><InputNumber size="small" min={0} value={tabWidth} onChange={(value) => this.onSet({ tabWidth: value })} /></FormItem>
                             </Col>
                             <Col span={12}>
                                 <FormItem label="标签H"><InputNumber size="small" min={0} value={tabHeight} onChange={(value) => this.onSet({ tabHeight: value })} /></FormItem>

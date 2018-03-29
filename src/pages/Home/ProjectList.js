@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react';
-import { Menu, Icon, message, Spin, Modal } from 'antd';
+import React, { PureComponent, Fragment } from 'react';
+import { createPortal } from 'react-dom';
+import { Menu, Icon, message, Spin, Modal, Button } from 'antd';
 import { INIT } from '../../util/action';
 
 const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
 
 
 const temp = (h) => ({
@@ -21,11 +21,37 @@ const temp = (h) => ({
   "children": []
 })
 
+class ActionBtn extends PureComponent {
+  constructor() {
+    super();
+    this.node = document.getElementById("header");
+  }
+  savePage = () => {
+    const { layout, pageIndex } = this.props.store;
+    this.props.savePage(pageIndex[0], layout.toJS()[0]);
+  }
+  onView = () => {
+    const {  pageIndex } = this.props.store;
+    const url = `/mofun.html?page=${pageIndex[1]}/1`
+    window.open(url);
+  }
+  render() {
+    return createPortal(
+      <div className="action-btn-group"><Button onClick={this.onView} icon="eye">预览</Button><Button icon="camera" onClick={this.savePage}>保存</Button></div>,
+      this.node
+    )
+  }
+
+}
+
 export default class ProjectList extends PureComponent {
 
-  state = {
-    Propject: [],
-    pageIndex: ['1', '1']
+  constructor(props) {
+    super(props);
+    this.state = {
+      pageIndex: props.store.pageIndex,
+      Propject: []
+    };
   }
 
   handleClick = (e) => {
@@ -39,14 +65,15 @@ export default class ProjectList extends PureComponent {
         okText: '确认',
         cancelText: '取消',
         onOk() {
-          const { layout } = _this.props.store;
-          _this.savePage(pageIndex[0],layout.toJS()[0]);
+          const { layout, jumpPage } = _this.props.store;
+          _this.savePage(pageIndex[0], layout.toJS()[0]);
           _this.setState({ pageIndex: keyPath });
           _this.initPage(keyPath[0]);
+          jumpPage(keyPath);
         }
       });
     }
-  } 
+  }
 
   fetchProject = async () => {
     return await fetch(window.SERVER + '/project')
@@ -119,7 +146,7 @@ export default class ProjectList extends PureComponent {
       })
       .then((data) => {
         if (data.success) {
-          const { updata,focus } = this.props.store;
+          const { updata, focus } = this.props.store;
           let _layout;
           if (data.result && data.result.type) {
             _layout = INIT(data.result);
@@ -139,7 +166,7 @@ export default class ProjectList extends PureComponent {
   }
 
   async componentDidMount() {
-    let Propject = await this.fetchProject()||[];
+    let Propject = await this.fetchProject() || [];
     for (let i = 0; i < Propject.length; i++) {
       Propject[i].pages = await this.fetchPage(Propject[i].id);
     }
@@ -154,26 +181,33 @@ export default class ProjectList extends PureComponent {
       return <div className="project-loader"><Spin tip="正在加载工程" /></div>
     }
     return (
-      <Menu
-        onClick={this.handleClick}
-        mode="inline"
-        defaultSelectedKeys={[pageIndex[0]]}
-        defaultOpenKeys={[pageIndex[1]]}
-        selectedKeys={[pageIndex[0]]}
-      >
-        {
-          Propject.map(el => (
-            <SubMenu key={el.id} title={<span><Icon type="laptop" /><span>{el.name}</span></span>}>
-              {
+      <Fragment>
+        <Menu
+          onClick={this.handleClick}
+          mode="inline"
+          defaultSelectedKeys={[pageIndex[0]]}
+          defaultOpenKeys={[pageIndex[1]]}
+          selectedKeys={[pageIndex[0]]}
+        >
+          {
+            Propject.map(el => (
+              <SubMenu key={el.id} title={<span><Icon type="laptop" /><span>{el.name}</span></span>}>
+                {
 
-                el.pages.map(item => (
-                  <Menu.Item key={item.id}>{item.name}</Menu.Item>
-                ))
-              }
-            </SubMenu>
-          ))
-        }
-      </Menu>
+                  el.pages.map(item => {
+                    if (item.isPage < 0) {
+                      return null
+                    } else {
+                      return <Menu.Item key={item.id}>{item.name}</Menu.Item>
+                    }
+                  })
+                }
+              </SubMenu>
+            ))
+          }
+        </Menu>
+        <ActionBtn savePage={this.savePage} store={this.props.store} />
+      </Fragment>
     );
   }
 }

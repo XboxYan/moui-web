@@ -137,45 +137,45 @@ export default class StylesPane extends PureComponent {
     fetchData = () => {
         const { fetching } = this.state;
         if (fetching) {
-            fetch(window.SERVER+'/datasource/1')
-            .then((data)=>{
-                if (data.ok) {
-                    return data.json();
-                }else{
-                    return data;
-                }
-            })
-            .then((data)=>{
-                this.setState({ 
-                    fetching: false 
+            fetch(window.SERVER + '/datasource/1')
+                .then((data) => {
+                    if (data.ok) {
+                        return data.json();
+                    } else {
+                        return data;
+                    }
                 })
-                if(data.success){
-                    this.setState({ 
-                        datasourceList:data.result, 
+                .then((data) => {
+                    this.setState({
+                        fetching: false
                     })
-                }else{
-                    message.error(data.statusText);
-                }
-            })
+                    if (data.success) {
+                        this.setState({
+                            datasourceList: data.result,
+                        })
+                    } else {
+                        message.error(data.statusText);
+                    }
+                })
         }
     }
 
     onChange = (value) => {
-        const { datasource:{id} } = this.props.store.current;
-        if(value===id){
+        const { datasource: { id } } = this.props.store.current;
+        if (value === id) {
             return false;
         }
         let datasourceItem = this.finddatasourceItem(value);
         const { layout, updata, index } = this.props.store;
         const d = value ? {
-            id: value, 
-            name:datasourceItem.name, 
-            desc:datasourceItem.desc,
-            type:datasourceItem.type, 
-            url:datasourceItem.url, 
-            params:this.filterParams(datasourceItem.params) 
+            id: value,
+            name: datasourceItem.name,
+            desc: datasourceItem.desc,
+            type: datasourceItem.type,
+            url: datasourceItem.url,
+            params: this.filterParams(datasourceItem.params)
         } : {};
-        const _layout = CHANGE(layout, index, {datasource:d}, []);
+        const _layout = CHANGE(layout, index, { datasource: d }, []);
         updata(_layout);
     }
 
@@ -192,7 +192,7 @@ export default class StylesPane extends PureComponent {
     }
 
     filterParams = (params) => {
-        return params.map(d => ({ name: d.name, id: d.id, alias:d.alias, value:d.defaultVal }))
+        return params.map(d => ({ name: d.name, id: d.id, alias: d.alias, value: d.defaultVal }))
     }
 
     finddatasourceItem = (id) => {
@@ -207,16 +207,16 @@ export default class StylesPane extends PureComponent {
     onInput = (i) => (e) => {
         const { value } = e.target;
         const { layout, updata, index } = this.props.store;
-        const _layout = CHANGE(layout, index, { value }, ['datasource','params',i]);
+        const _layout = CHANGE(layout, index, { value }, ['datasource', 'params', i]);
         updata(_layout);
     }
 
-    onPreView = (url,type) => () => {
+    onPreView = (url, type) => () => {
         request({
-            url:url+(type===0?'':'&page=1&pageSize=1'),
+            url: url + (type === 0 ? '' : '&page=1&pageSize=1'),
             success: (data) => {
                 if (data.success) {
-                    const result = type === 0 ? data.result:data.result[0]
+                    const result = type === 0 ? data.result : data.result[0]
                     this.setState({
                         show: true,
                         fetchresult: result
@@ -241,8 +241,8 @@ export default class StylesPane extends PureComponent {
     render() {
         const { datasource, datas } = this.props.store.current;
         const { fetching, datasourceList, show, fetchresult } = this.state;
-        let id, params,url,type;
-        if(datasource){
+        let id, params, url, type;
+        if (datasource) {
             id = datasource.id;
             type = datasource.type;
             params = datasource.params;
@@ -256,14 +256,18 @@ export default class StylesPane extends PureComponent {
                             <Form className="form_pane">
                                 <h3 className="divider"><span>接收数据</span></h3>
                                 {
-                                    datas.props
-                                        ?
-                                        <div className="tagView">
-                                            <Tag color="royalblue" closable onClose={this.onCloseTag}>{datas.props}</Tag>
-                                            <p>{datas.value}</p>
-                                        </div>
+                                    datas ? (
+                                        datas.props
+                                            ?
+                                            <div className="tagView">
+                                                <Tag color="royalblue" closable onClose={this.onCloseTag}>{datas.props}</Tag>
+                                                <p>{datas.value}</p>
+                                            </div>
+                                            :
+                                            <Alert message="暂无外部数据" type="info" />
+                                        )
                                         :
-                                        <Alert message="暂无外部数据" type="info" />
+                                        <Alert message="内部组件无法定义数据" type="info" />
                                 }
                             </Form>
                         )
@@ -286,7 +290,7 @@ export default class StylesPane extends PureComponent {
                                         }
                                     </Select>
                                     {
-                                        id &&<Alert style={{marginTop:10}} message={datasource.desc||'暂无描述~'} type="info" />
+                                        id && <Alert style={{ marginTop: 10 }} message={datasource.desc || '暂无描述~'} type="info" />
                                     }
                                 </Form>
                                 {
@@ -295,12 +299,12 @@ export default class StylesPane extends PureComponent {
                                         <Form className="form_pane">
                                             <h3 className="divider"><span>参数选择</span></h3>
                                             {
-                                                params.map((d,i) => <DataParams key={d.id} data={d} onInput={this.onInput(i)} />)
+                                                params.map((d, i) => <DataParams key={d.id} data={d} onInput={this.onInput(i)} />)
                                             }
                                         </Form>
                                         <Form className="form_pane">
                                             <div className="url-preview">
-                                                <h5 onClick={this.onPreView(url,type)}>请求预览</h5>
+                                                <h5 onClick={this.onPreView(url, type)}>请求预览</h5>
                                                 <span>{url}</span>
                                             </div>
                                         </Form>

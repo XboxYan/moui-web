@@ -23,6 +23,7 @@ const ADD = (layout, index, type, { x, y },dynamic) => {
         contents: defaultProps[type].contents||null,
         datasource: defaultProps[type].datasource||null,
         datas: defaultProps[type].datas||null,
+        intent: defaultProps[type].intent||null,
         children: []
     })
     if(e < 0){

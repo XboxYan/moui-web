@@ -124,7 +124,7 @@ export default class Index extends PureComponent {
     return (
       <StoreProvider>
         <Layout>
-          <Header className="header">
+          <Header className="header" id="header">
             <div className="logo"><Icon type="cloud" /> Coship</div>
           </Header>
           <Layout>

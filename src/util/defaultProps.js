@@ -12,7 +12,8 @@ export default {
             editable:true,
             disabled:false
         },
-        datasource:{}
+        datasource:{},
+        intent:{}
     },
     'Image':{
         style:{
@@ -24,9 +25,11 @@ export default {
             editable:true,
             alt: '',
             src: src,
+            srcId:null,
             disabled:false
         },
-        datas: {}
+        datas: {},
+        intent:{}
     },
     'Text':{
         style:{
@@ -41,7 +44,8 @@ export default {
             multiline: true,
             disabled:false
         },
-        datas: {}
+        datas: {},
+        intent:{}
     },
     'ListView':{
         style:{
@@ -66,8 +70,8 @@ export default {
                 allowdrop: true,
                 disabled: true
             },
-            datasource: {},
-            children: []
+            children: [],
+            intent:{}
         }],
         datasource:{}
     },
@@ -97,7 +101,6 @@ export default {
                 allowdrop: true,
                 disabled: true
             },
-            datasource: {},
             children: []
         }],
         contents: [{
@@ -110,7 +113,6 @@ export default {
                 allowdrop: true,
                 disabled: true
             },
-            datasource: {},
             children: []
         }],
     }
