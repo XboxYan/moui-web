@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import Immutable from 'immutable';
 import { FOCUS } from '../util/action';
 
+//window.SERVER = "http://10.9.212.118:1000";
+//window.SERVER = "http://10.9.212.121:3000";
 window.SERVER = "";
 
 const initialState = {

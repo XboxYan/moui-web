@@ -184,7 +184,7 @@ export default class StylesPane extends PureComponent {
         if (params.length > 0) {
             let p = '';
             params.forEach((d, i) => {
-                p += `${i > 0 ? '&' : ''}${d.name}=${d.value}`
+                p += `${i > 0 ? '&' : ''}${d.name}=${d.value[0]==='#'?d.defaultVal:d.value}`
             })
             s = '?' + p;
         }
@@ -192,7 +192,7 @@ export default class StylesPane extends PureComponent {
     }
 
     filterParams = (params) => {
-        return params.map(d => ({ name: d.name, id: d.id, alias: d.alias, value: d.defaultVal }))
+        return params.map(d => ({ name: d.name, id: d.id, alias: d.alias, value: d.defaultVal,defaultVal:d.defaultVal }))
     }
 
     finddatasourceItem = (id) => {

@@ -3,7 +3,7 @@
 .view[data-isdrag=true]::before,.view[data-editable=true]:focus::before{ top: -5px; right: -10px; transform: translateX(100%);  content:"x : "attr(data-pos-x)" px\Ay : "attr(data-pos-y)" px"; }
 .view[data-editable=true]:focus::after{ left: -5px; bottom: -10px; transform: translateY(100%); content:"w : "attr(data-res-w)" px\Ah : "attr(data-res-h)" px"; }
 .view[data-ishover=true]{ outline:1px dashed royalblue; }
-.view.over,.view[data-isover=true]{ background: rgb(253, 255, 232); outline:1px dashed royalblue;}
+.view.over,.view[data-isover=true]{ background: rgba(253, 255, 232,.5); outline:1px dashed royalblue;}
 .view.over::before{ content: ''; z-index: 100; pointer-events: none; transform: translateX(-1px); position: absolute; left: 50%; top: -20px; bottom: -20px; background: none; padding: 0; width: 0; border-left: 1px dashed orangered; }
 .view.over::after{ content: ''; z-index: 100; pointer-events: none; transform: translateY(-1px); position: absolute; top: 50%; left: -20px; right: -20px; background: none; padding: 0; height: 0; border-top: 1px dashed orangered; }
 .view:focus{ outline:1px solid royalblue; z-index: 10; }

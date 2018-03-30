@@ -32,7 +32,7 @@ class ActionBtn extends PureComponent {
   }
   onView = () => {
     const {  pageIndex } = this.props.store;
-    const url = `/mofun.html?page=${pageIndex[1]}/1`
+    const url = window.SERVER + `/mofun.html?page=${pageIndex[1]}/1`
     window.open(url);
   }
   render() {

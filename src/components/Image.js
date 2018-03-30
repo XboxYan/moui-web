@@ -17,7 +17,7 @@ export default class Image extends PureComponent {
 
     imgUpload = (ev, callbck) => {
         this.setState({ isUpload: true })
-        const { pageIndex } = this.props;
+        const { pageIndex,props:{srcId} } = this.props;
         const files = ev.target.files;
         if (files.length > 0) {
             let data = new FormData();
@@ -35,12 +35,14 @@ export default class Image extends PureComponent {
             })
             .then((res) => {
                 if (res.success) {
-                    const src = window.SERVER + `/resource/${pageIndex[1]}/${pageIndex[0]}/img/` + res.result.saveName;
-                    const srcId = res.result.id;
-                    const w = res.result.width;
-                    const h = res.result.height;
-                    this.props.onChange && this.props.onChange({ src, srcId }, ['props']);
-                    this.props.onChange && this.props.onChange({ w, h }, ['style']);
+                    const _src = window.SERVER + `/resource/${pageIndex[1]}/${pageIndex[0]}/img/` + res.result.saveName;
+                    const _srcId = res.result.id;
+                    if(!srcId){
+                        const w = res.result.width;
+                        const h = res.result.height;
+                        this.props.onChange && this.props.onChange({ w, h }, ['style']);
+                    }
+                    this.props.onChange && this.props.onChange({ src:_src, srcId:_srcId }, ['props']);                  
                     message.success('图片上传成功~');
                 } else {
                     message.error('图片上传失败！' + res.statusText);
