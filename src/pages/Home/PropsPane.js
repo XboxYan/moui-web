@@ -1,17 +1,15 @@
-import React, { PureComponent } from 'react';
-import { Form, Row, Col, Radio, Input, Slider, InputNumber, Checkbox, Button, Select, message } from 'antd';
+import React, { PureComponent,Fragment } from 'react';
+import { Form, Row, Col, Radio, Slider, InputNumber, Checkbox, Button, message, Alert } from 'antd';
 import ColorPicker from 'rc-color-picker';
 import { CHANGE } from '../../util/action';
 const FormItem = Form.Item;
-const Option = Select.Option;
-const InputGroup = Input.Group;
 const ButtonGroup = Button.Group;
 const RadioGroup = Radio.Group;
 
 
 export default class PropsPane extends PureComponent {
 
-    imgUpload = (ev, callbck) => {
+    imgUpload = (set) => (ev) => {
         //this.setState({ isUpload: true })
         const { pageIndex } = this.props.store;
         const files = ev.target.files;
@@ -22,36 +20,59 @@ export default class PropsPane extends PureComponent {
                 method: 'POST',
                 body: data
             })
-            .then((res) => {
-                if (res.ok) {
-                    return res.json();
-                } else {
-                    return res
-                }
-            })
-            .then((res) => {
-                if (res.success) {
-                    const src = window.SERVER + `/resource/${pageIndex[1]}/${pageIndex[0]}/img/` + res.result.saveName;
-                    //const srcId = res.result.id;
-                    this.onChange({ backgroundImage:src });
-                    message.success('图片上传成功~');
-                } else {
-                    message.error('图片上传失败！' + res.statusText);
-                }
-                //this.setState({ isUpload: false })
-            })
+                .then((res) => {
+                    if (res.ok) {
+                        return res.json();
+                    } else {
+                        return res
+                    }
+                })
+                .then((res) => {
+                    if (res.success) {
+                        const src = res.result.savePath + '/img/' + res.result.saveName;
+                        this[set]({ backgroundImage: src });
+                        message.success('图片上传成功~');
+                    } else {
+                        message.error('图片上传失败！' + res.statusText);
+                    }
+                    //this.setState({ isUpload: false })
+                })
         }
     }
 
     onChange = (key_value) => {
-        const { layout, updata, index } = this.props.store;
-        const _layout = CHANGE(layout, index, key_value, ['style']);
+        const { layout, updata, indexList } = this.props.store;
+        let _layout = layout;
+        indexList.forEach(item=>{
+            _layout = CHANGE(_layout, item, key_value, ['style']);
+        })
         updata(_layout);
     }
 
     onSet = (key_value) => {
-        const { layout, updata, index } = this.props.store;
-        const _layout = CHANGE(layout, index, key_value, ['props']);
+        const { layout, updata, indexList } = this.props.store;
+        let _layout = layout;
+        indexList.forEach(item=>{
+            _layout = CHANGE(_layout, item, key_value, ['props']);
+        })
+        updata(_layout);
+    }
+
+    onFocus = (key_value) => {
+        const { layout, updata, indexList } = this.props.store;
+        let _layout = layout;
+        indexList.forEach(item=>{
+            _layout = CHANGE(_layout, item, key_value, ['focus']);
+        })
+        updata(_layout);
+    }
+
+    onSelected = (key_value) => {
+        const { layout, updata, indexList } = this.props.store;
+        let _layout = layout;
+        indexList.forEach(item=>{
+            _layout = CHANGE(_layout, item, key_value, ['select']);
+        })
         updata(_layout);
     }
 
@@ -75,6 +96,7 @@ export default class PropsPane extends PureComponent {
     }
 
     render() {
+        const { current, indexList } = this.props.store;
         const { style: {
             x = 0,
             y = 0,
@@ -83,9 +105,8 @@ export default class PropsPane extends PureComponent {
             backgroundColor = 'unset',
             backgroundImage = 'unset',
             opacity = 1,
-            borderWidth = 0,
-            borderStyle = 'unset',
-            borderColor = '#000',
+            outlineWidth = 0,
+            outlineColor = 'unset',
             borderRadius = 0,
             color = '#000',
             fontSize = 14,
@@ -109,37 +130,70 @@ export default class PropsPane extends PureComponent {
                 tabAlign,
                 dynamic
         },
+            focus,
+            select,
             type
-     } = this.props.store.current;
+     } = current;
+        const {
+        enable = false,
+            onview = true,
+            outlineWidth: _outlineWidth = outlineWidth,
+            outlineColor: _outlineColor = outlineColor,
+            borderRadius: _borderRadius = borderRadius,
+            disabled:_disabled=false,
+            color: _color = color,
+            backgroundColor: _backgroundColor = backgroundColor,
+            backgroundImage: _backgroundImage = backgroundImage,
+
+     } = focus || {};
+        const {
+            enable:$enable = false,
+            onview:$onview = true,
+            outlineWidth: $outlineWidth = outlineWidth,
+            outlineColor: $outlineColor = outlineColor,
+            borderRadius: $borderRadius = borderRadius,
+            color: $color = color,
+            disabled:$disabled=false,
+            backgroundColor: $backgroundColor = backgroundColor,
+            backgroundImage: $backgroundImage = backgroundImage,
+
+     } = select || {};
+        const multiple = indexList.length > 1;
         return (
             <div className="pane">
-                <Form className="form_pane">
-                    <h3 className="divider"><span>位置和大小</span></h3>
-                    <Row gutter={10}>
-                        <Col span={12}>
-                            <FormItem label="X"><InputNumber disabled={!editable} size="small" min={0} value={x} onChange={(value) => this.onChange({ x: value })} /></FormItem>
-                        </Col>
-                        <Col span={12}>
-                            <FormItem label="Y"><InputNumber disabled={!editable} size="small" min={0} value={y} onChange={(value) => this.onChange({ y: value })} /></FormItem>
-                        </Col>
-                        <Col span={12}>
-                            <FormItem label="W"><InputNumber disabled={!editable} size="small" min={0} value={w} onChange={(value) => this.onChange({ w: value })} /></FormItem>
-                        </Col>
-                        <Col span={12}>
-                            <FormItem label="H"><InputNumber disabled={!editable} size="small" min={0} value={h} onChange={(value) => this.onChange({ h: value })} /></FormItem>
-                        </Col>
-                        <Col span={24}>
-                            <FormItem label="锁定"><Checkbox disabled={disabled} checked={!editable} onChange={(e) => this.onSet({ editable: !e.target.checked })} /></FormItem>
-                        </Col>
-                    </Row>
-                </Form>
+                {
+                    multiple && <Alert style={{ marginBottom: 10 }} message="现在是多选模式" type="warning" />
+                }
+                {
+                    !multiple &&
+                    <Form className="form_pane">
+                        <h3 className="divider"><span>位置和大小</span></h3>
+                        <Row gutter={10}>
+                            <Col span={12}>
+                                <FormItem label="X"><InputNumber disabled={!editable} size="small" min={0} value={x} onChange={(value) => this.onChange({ x: value })} /></FormItem>
+                            </Col>
+                            <Col span={12}>
+                                <FormItem label="Y"><InputNumber disabled={!editable} size="small" min={0} value={y} onChange={(value) => this.onChange({ y: value })} /></FormItem>
+                            </Col>
+                            <Col span={12}>
+                                <FormItem label="W"><InputNumber disabled={!editable} size="small" min={0} value={w} onChange={(value) => this.onChange({ w: value })} /></FormItem>
+                            </Col>
+                            <Col span={12}>
+                                <FormItem label="H"><InputNumber disabled={!editable} size="small" min={0} value={h} onChange={(value) => this.onChange({ h: value })} /></FormItem>
+                            </Col>
+                            <Col span={24}>
+                                <FormItem label="锁定"><Checkbox disabled={disabled} checked={!editable} onChange={(e) => this.onSet({ editable: !e.target.checked })} /></FormItem>
+                            </Col>
+                        </Row>
+                    </Form>
+                }
                 {
                     type !== 'Text' &&
                     <Form className="form_pane">
                         <h3 className="divider"><span>外观</span></h3>
                         {
                             type !== 'Image' &&
-                            <FormItem label="填充">
+                            <FormItem label="背景">
                                 <Button size="small">
                                     <ColorPicker
                                         className={"colorPicker" + this.colorName(backgroundColor)}
@@ -149,29 +203,23 @@ export default class PropsPane extends PureComponent {
                                     />
                                 </Button>
                                 <Button className={"img-load-btn" + this.colorName(backgroundImage)} size="small" style={{ marginLeft: 10 }}>
-                                    <input onChange={this.imgUpload} type="file" accept="image/*" id={"xFile-img"} />
-                                    <label htmlFor={"xFile-img"} style={{backgroundImage:backgroundImage==='unset'?'none':`url(${backgroundImage})`}} />
+                                    <input onChange={this.imgUpload("onChange")} type="file" accept="image/*" id={"xFile-img"} />
+                                    <label htmlFor={"xFile-img"} style={{ backgroundImage: backgroundImage === 'unset' ? 'none' : `url(${backgroundImage})` }} />
                                 </Button>
-                                <a className="color-reset-btn" onClick={() => this.onChange({ backgroundColor: 'unset',backgroundImage: 'unset' })}>清除</a>
+                                <a className="color-reset-btn" onClick={() => this.onChange({ backgroundColor: 'unset', backgroundImage: 'unset' })}>清除</a>
                             </FormItem>
                         }
                         <FormItem label="边框">
-                            <InputGroup compact className="inputGroup">
-                                <Button size="small">
-                                    <ColorPicker
-                                        className="colorPicker"
-                                        animation="slide-up"
-                                        color={borderColor}
-                                        onChange={(colors) => this.onChange({ borderColor: colors.color + this.toAlpha(colors.alpha) })}
-                                    />
-                                </Button>
-                                <Select value={borderStyle} size="small" style={{ flex: 1 }} onChange={(value) => this.onChange({ borderStyle: value })}>
-                                    <Option value="solid">———————</Option>
-                                    <Option value="dashed">-------</Option>
-                                    <Option value="dotted">·······</Option>
-                                </Select>
-                                <InputNumber size="small" style={{ width: 50 }} min={0} value={borderWidth} onChange={(value) => this.onChange({ borderWidth: value })} />
-                            </InputGroup>
+                            <Button size="small" style={{ marginRight: 10 }}>
+                                <ColorPicker
+                                    className="colorPicker"
+                                    animation="slide-up"
+                                    color={outlineColor}
+                                    onChange={(colors) => this.onChange({ outlineColor: colors.color + this.toAlpha(colors.alpha) })}
+                                />
+                            </Button>
+                            <Slider value={outlineWidth} min={0} max={20} step={2} onChange={(value) => this.onChange({ outlineWidth: value })} />
+                            <InputNumber style={{ width: 50 }} size="small" min={0} max={20} value={outlineWidth} onChange={(value) => this.onChange({ outlineWidth: value })} />
                         </FormItem>
                         <FormItem label="圆角">
                             <Slider value={borderRadius} min={0} max={20} onChange={(value) => this.onChange({ borderRadius: value })} />
@@ -297,6 +345,132 @@ export default class PropsPane extends PureComponent {
                                 </FormItem>
                             </Col>
                         </Row>
+                    </Form>
+                }
+                {
+                    focus &&
+                    <Form className="form_pane">
+                        <h3 className="divider"><span>焦点样式</span></h3>
+                        <FormItem label="启用"><Checkbox checked={enable} disabled={_disabled} onChange={(e) => this.onFocus({ enable: e.target.checked, onview: e.target.checked })} /></FormItem>
+                        <div style={{ display: enable ? 'block' : 'none' }}>
+                            {
+                                type !== 'Text'
+                                ?
+                                <Fragment>
+                                    {
+                                        type !== 'Image' &&
+                                        <FormItem label="背景">
+                                            <Button size="small">
+                                                <ColorPicker
+                                                    className={"colorPicker" + this.colorName(_backgroundColor)}
+                                                    animation="slide-up"
+                                                    color={_backgroundColor}
+                                                    onChange={(colors) => this.onFocus({ backgroundColor: colors.color + this.toAlpha(colors.alpha) })}
+                                                />
+                                            </Button>
+                                            <Button className={"img-load-btn" + this.colorName(_backgroundImage)} size="small" style={{ marginLeft: 10 }}>
+                                                <input onChange={this.imgUpload("onFocus")} type="file" accept="image/*" id={"xFile-img-focus"} />
+                                                <label htmlFor={"xFile-img-focus"} style={{ backgroundImage: _backgroundImage === 'unset' ? 'none' : `url(${_backgroundImage})` }} />
+                                            </Button>
+                                            <a className="color-reset-btn" onClick={() => this.onFocus({ backgroundColor: 'unset', backgroundImage: 'unset' })}>清除</a>
+                                        </FormItem>
+                                    }
+                                    <FormItem label="边框">
+                                        <Button size="small" style={{ marginRight: 10 }}>
+                                            <ColorPicker
+                                                className="colorPicker"
+                                                animation="slide-up"
+                                                color={_outlineColor}
+                                                onChange={(colors) => this.onFocus({ outlineColor: colors.color + this.toAlpha(colors.alpha) })}
+                                            />
+                                        </Button>
+                                        <Slider value={_outlineWidth} min={0} max={20} step={2} onChange={(value) => this.onFocus({ outlineWidth: value })} />
+                                        <InputNumber style={{ width: 50 }} size="small" min={0} max={20} value={_outlineWidth} onChange={(value) => this.onFocus({ outlineWidth: value })} />
+                                    </FormItem>
+                                    <FormItem label="圆角">
+                                        <Slider value={_borderRadius} min={0} max={20} onChange={(value) => this.onFocus({ borderRadius: value })} />
+                                        <InputNumber style={{ width: 50 }} size="small" min={0} max={20} value={_borderRadius} onChange={(value) => this.onFocus({ borderRadius: value })} />
+                                    </FormItem>
+                                </Fragment>
+                                :
+                                <Fragment>
+                                    <FormItem label="文字颜色">
+                                        <Button size="small">
+                                            <ColorPicker
+                                                className="colorPicker"
+                                                animation="slide-up"
+                                                color={_color}
+                                                onChange={(colors) => this.onFocus({ color: colors.color + this.toAlpha(colors.alpha) })}
+                                            />
+                                        </Button>
+                                    </FormItem>
+                                </Fragment>
+                            }
+                            <FormItem label="预览"><Checkbox checked={onview} onChange={(e) => this.onFocus({ onview: e.target.checked })} /></FormItem>
+                        </div>
+                    </Form>
+                }
+                {
+                    select &&
+                    <Form className="form_pane">
+                        <h3 className="divider"><span>选中样式</span></h3>
+                        <FormItem label="启用"><Checkbox disabled={$disabled} checked={$enable} onChange={(e) => this.onSelected({ enable: e.target.checked, onview: e.target.checked })} /></FormItem>
+                        <div style={{ display: $enable ? 'block' : 'none' }}>
+                            {
+                                type !== 'Text'
+                                ?
+                                <Fragment>
+                                    {
+                                        type !== 'Image' &&
+                                        <FormItem label="背景">
+                                            <Button size="small">
+                                                <ColorPicker
+                                                    className={"colorPicker" + this.colorName($backgroundColor)}
+                                                    animation="slide-up"
+                                                    color={$backgroundColor}
+                                                    onChange={(colors) => this.onSelected({ backgroundColor: colors.color + this.toAlpha(colors.alpha) })}
+                                                />
+                                            </Button>
+                                            <Button className={"img-load-btn" + this.colorName($backgroundImage)} size="small" style={{ marginLeft: 10 }}>
+                                                <input onChange={this.imgUpload("onSelected")} type="file" accept="image/*" id={"xFile-img-focus"} />
+                                                <label htmlFor={"xFile-img-focus"} style={{ backgroundImage: $backgroundImage === 'unset' ? 'none' : `url(${$backgroundImage})` }} />
+                                            </Button>
+                                            <a className="color-reset-btn" onClick={() => this.onSelected({ backgroundColor: 'unset', backgroundImage: 'unset' })}>清除</a>
+                                        </FormItem>
+                                    }
+                                    <FormItem label="边框">
+                                        <Button size="small" style={{ marginRight: 10 }}>
+                                            <ColorPicker
+                                                className="colorPicker"
+                                                animation="slide-up"
+                                                color={$outlineColor}
+                                                onChange={(colors) => this.onSelected({ outlineColor: colors.color + this.toAlpha(colors.alpha) })}
+                                            />
+                                        </Button>
+                                        <Slider value={$outlineWidth} min={0} max={20} step={2} onChange={(value) => this.onSelected({ outlineWidth: value })} />
+                                        <InputNumber style={{ width: 50 }} size="small" min={0} max={20} value={$outlineWidth} onChange={(value) => this.onSelected({ outlineWidth: value })} />
+                                    </FormItem>
+                                    <FormItem label="圆角">
+                                        <Slider value={$borderRadius} min={0} max={20} onChange={(value) => this.onSelected({ borderRadius: value })} />
+                                        <InputNumber style={{ width: 50 }} size="small" min={0} max={20} value={$borderRadius} onChange={(value) => this.onSelected({ borderRadius: value })} />
+                                    </FormItem>
+                                </Fragment>
+                                :
+                                <Fragment>
+                                    <FormItem label="文字颜色">
+                                        <Button size="small">
+                                            <ColorPicker
+                                                className="colorPicker"
+                                                animation="slide-up"
+                                                color={$color}
+                                                onChange={(colors) => this.onSelected({ color: colors.color + this.toAlpha(colors.alpha) })}
+                                            />
+                                        </Button>
+                                    </FormItem>
+                                </Fragment>
+                            }
+                            <FormItem label="预览"><Checkbox checked={$onview} onChange={(e) => this.onSelected({ onview: e.target.checked })} /></FormItem>
+                        </div>
                     </Form>
                 }
             </div>

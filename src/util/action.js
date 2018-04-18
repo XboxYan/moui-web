@@ -8,11 +8,18 @@ const paseTree = (path) => {
     return path.replace(/-/g, '-children-').replace(/~/g, '-item-').replace(/@/g, '-tabs-').replace(/#/g, '-contents-').split('-').slice(2).map(value => value >= 0 ? Number(value) : value);
 }
 
+const fixType = (index,type) => {
+    const _index = index.split('>')[1];
+    return type+_index;
+}
+
 const ADD = (layout, index, type, { x, y },dynamic) => {
     const O = layout;
     const tree = paseTree(index);
     const c = O.getIn([...tree, 'children']);
     const e = c.indexOf(null);
+    const n = c.size;
+    const focusindex = fixType(index,type+'>')+'-';
     const $dynamic = dynamic?{dynamic:!!dynamic}:{};
     const Com = Immutable.fromJS({
         type, 
@@ -24,14 +31,17 @@ const ADD = (layout, index, type, { x, y },dynamic) => {
         datasource: defaultProps[type].datasource||null,
         datas: defaultProps[type].datas||null,
         intent: defaultProps[type].intent||null,
-        children: []
+        focus:defaultProps[type].focus||null,
+        children: defaultProps[type].props.allowdrop?[]:null
     })
     if(e < 0){
         const $O = O.updateIn([...tree, 'children'], value => value.push(Com));
-        return $O
+        const $focusindex = focusindex+n;
+        return [$O,$focusindex];
     }else{
         const $O = O.setIn([...tree, 'children', e], Com);
-        return $O
+        const $focusindex = focusindex+e;
+        return [$O,$focusindex];
     }
 }
 
@@ -50,8 +60,20 @@ const INIT = (layout) => {
 const CHANGE = (layout, index, key_value, path) => {
     const O = layout;
     const tree = paseTree(index);
-    const $O = O.updateIn([...tree, ...path],value=>value.merge(Immutable.fromJS(key_value)))
-    return $O
+    let hasChange = false;
+    for( let key in key_value){
+        if(key_value.hasOwnProperty(key)){
+    　　　　if(O.getIn([...tree, ...path,key])!==key_value[key]){
+                hasChange = true;
+            }
+    　　}
+    }
+    if(hasChange){
+        const $O = O.updateIn([...tree, ...path],value=>value.merge(Immutable.fromJS(key_value)));
+        return $O;
+    }else{
+        return layout;
+    }  
 }
 
 const COPY = (layout, target, item, pos) => {
@@ -62,10 +84,10 @@ const COPY = (layout, target, item, pos) => {
     const e = c.indexOf(null);
     if(e < 0){
         const $O = O.updateIn([...tree,'children'],value=>value.push($current))
-        return $O
+        return $O;
     }else{
         const $O = O.setIn([...tree, 'children', e], $current);
-        return $O
+        return $O;
     }
 }
 
@@ -75,26 +97,21 @@ const ADDTAB = (layout,index,tabIndex) => {
     const $tabs = Immutable.fromJS(defaultProps.TabView.tabs[0]);
     const $contents = Immutable.fromJS(defaultProps.TabView.contents[0]);
     const $O = O.updateIn([...tree,'tabs'],value=>value.insert(tabIndex+1,$tabs)).updateIn([...tree,'contents'],value=>value.insert(tabIndex+1,$contents));
-    return $O
+    return [$O,fixType(index,'View>')+'@'+(tabIndex+1)];
 }
 
 const DELTAB = (layout, index, tabIndex) => {
     const O = layout;
     const tree = paseTree(index);
     const $O = O.removeIn([...tree,'tabs',tabIndex]).removeIn([...tree,'contents',tabIndex]);
-    return $O
+    return $O;
 }
 
 const DELETE = (layout, index) => {
     const O = layout;
     const tree = paseTree(index);
     const $O = O.setIn(tree,null);
-    return $O
-}
-
-const fixType = (index,type) => {
-    const _index = index.split('>')[1];
-    return type+_index;
+    return $O;
 }
 
 const MOVE = (layout, pos, target, index, path) => {
@@ -116,11 +133,11 @@ const MOVE = (layout, pos, target, index, path) => {
         if (e < 0) {
             const $P = $O.updateIn([...target_tree, 'children'], value => value.push($current));
             focusindex = fixType(target,type)+'-'+n;
-            return [$P,focusindex]
+            return [$P,focusindex];
         } else {
             const $P = $O.setIn([...target_tree, 'children', e], $current);
             focusindex = fixType(target,type)+'-'+e;
-            return [$P,focusindex]
+            return [$P,focusindex];
         }
     }
 }

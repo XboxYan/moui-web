@@ -1,6 +1,33 @@
 import src from '../img/default_img.png';
 
-export default {
+const editTheme = [
+    {
+        color:'royalblue',
+        fontColor:'#fff'
+    },
+    {
+        color:'#f44336',
+        fontColor:'#fff'
+    },
+    {
+        color:'#e91e63',
+        fontColor:'#fff'
+    },
+    {
+        color:'#009688',
+        fontColor:'#fff'
+    },
+    {
+        color:'#ffeb3b',
+        fontColor:'#333'
+    },
+    {
+        color:'#fff',
+        fontColor:'#333'
+    },
+]
+
+const props = {
     'View':{
         style:{
             w:200,
@@ -13,6 +40,11 @@ export default {
             disabled:false
         },
         datasource:{},
+        focus:{
+            enable:false,
+            onview:false,
+            backgroundColor:'#f74848'
+        },
         intent:{}
     },
     'Image':{
@@ -29,6 +61,12 @@ export default {
             disabled:false
         },
         datas: {},
+        focus:{
+            enable:true,
+            onview:false,
+            outlineWidth:3,
+            outlineColor:'#f74848'
+        },
         intent:{}
     },
     'Text':{
@@ -44,6 +82,7 @@ export default {
             multiline: true,
             disabled:false
         },
+        focus:{},
         datas: {},
         intent:{}
     },
@@ -70,8 +109,14 @@ export default {
                 allowdrop: true,
                 disabled: true
             },
-            children: [],
-            intent:{}
+            focus:{
+                enable:true,
+                onview:false,
+                outlineWidth:3,
+                outlineColor:'#f74848'
+            },
+            intent:{},
+            children:[]
         }],
         datasource:{}
     },
@@ -101,7 +146,20 @@ export default {
                 allowdrop: true,
                 disabled: true
             },
-            children: []
+            children:[],
+            focus:{
+                disabled:true,
+                enable:true,
+                onview:false,
+                outlineWidth:3,
+                outlineColor:'#f74848'
+            },
+            select:{
+                disabled:true,
+                enable:true,
+                onview:false,
+                backgroundColor:'#f74848'
+            }, 
         }],
         contents: [{
             type: 'View',
@@ -113,7 +171,11 @@ export default {
                 allowdrop: true,
                 disabled: true
             },
-            children: []
+            children:[]
         }],
     }
 }
+
+export {editTheme};
+
+export default props;

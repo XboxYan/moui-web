@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { message } from 'antd';
 import Image from '../../components/Image';
 import View from '../../components/View';
@@ -15,13 +15,35 @@ const type = {
     'TabView': TabView,
 }
 
-export default class Center extends PureComponent {
+export default class Center extends Component {
 
     copyData = null;
 
+    onClick = (index) => (ev) => {
+        if (ev.target.tagName !== 'TEXTAREA') {
+            const { focus, indexList, index: $index } = this.props.store;
+            if (ev.shiftKey && $index) {
+                if ($index.split('>')[0] === index.split('>')[0]) {
+                    const i = indexList.indexOf(index);
+                    if (i < 0) {
+                        focus([...indexList, index], true);
+                    } else {
+                        let _indexList = [...indexList]
+                        _indexList.splice(i, 1);
+                        focus(_indexList, true);
+                    }
+                } else {
+                    message.error('必须选择同一类型组件');
+                }
+            } else {
+                focus([index], true);
+            }
+        }
+    }
+
     onFocus = (index) => () => {
-        const { focus } = this.props.store;
-        focus(index);
+        //const { focus } = this.props.store;
+        //focus(index);
     }
 
     onCopy = () => {
@@ -45,29 +67,35 @@ export default class Center extends PureComponent {
     }
 
     dragEnd = (index) => (pos, target) => {
-        window.isremove = false;
+        //window.isremove = false;
         const { layout, updata } = this.props.store;
         const [_layout, focusindex] = MOVE(layout, pos, target, index, ['style']);
-        updata(_layout, focusindex);
+        updata(_layout,focusindex);
+        //console.log(focusindex)
         document.getElementById(focusindex).focus();
     }
 
     addCom = ({ type, x, y, index, dynamic }) => {
         const { layout, updata } = this.props.store;
-        const _layout = ADD(layout, index, type, { x, y }, dynamic);
-        updata(_layout);
+        const [_layout, focusindex] = ADD(layout, index, type, { x, y }, dynamic);
+        updata(_layout,focusindex);
     }
 
     addTab = (index) => (tabIndex) => {
         const { layout, updata } = this.props.store;
-        const _layout = ADDTAB(layout, index, tabIndex);
-        updata(_layout);
+        const [_layout, focusindex] = ADDTAB(layout, index, tabIndex);
+        updata(_layout, focusindex);
     }
 
-    delTab = (index) => (tabIndex) => {
+    delTab = (index) => (tabIndex,isLast) => {
         const { layout, updata } = this.props.store;
         const _layout = DELTAB(layout, index, tabIndex);
-        updata(_layout);
+        if (isLast) {
+            const i = 'View>' + (index.split('>')[1]) + '@' + (tabIndex-1);
+            updata(_layout,i);
+        } else {
+            updata(_layout);
+        }
     }
 
     addDatas = (type) => ({ name, value, index }) => {
@@ -85,14 +113,19 @@ export default class Center extends PureComponent {
         const { layout, updata } = this.props.store;
         const _layout = CHANGE(layout, index, key_value, type);
         updata(_layout);
-    }    
+    }
 
     onDelete = (index) => () => {
         window.isremove = true;
         const { layout, updata } = this.props.store;
         const _layout = DELETE(layout, index);
-        updata(_layout, index.slice(0, -2));
+        const focusindex = 'View>'+index.slice(0, -2).split('>')[1];
+        updata(_layout, focusindex);
         message.success('该组件已删除');
+    }
+
+    shouldComponentUpdate (nextProps) { 
+        return this.props.store.layout !== nextProps.store.layout || this.props.store.index !== nextProps.store.index || this.props.store.indexList.length !== nextProps.store.indexList.length; 
     }
 
     loop = (data, m = '', s = '-', innerView) => data.map((item, i) => {
@@ -112,7 +145,8 @@ export default class Center extends PureComponent {
             }
         }
         const index = item.type + '>' + key;
-        const { pageIndex } = this.props.store;
+        const { pageIndex, indexList } = this.props.store;
+        const selected = indexList.indexOf(index) >= 0;
         return (
             <Tag
                 {...item}
@@ -121,11 +155,13 @@ export default class Center extends PureComponent {
                 innerView={innerView}
                 index={index}
                 pageIndex={pageIndex}
+                selected={selected}
                 addCom={this.addCom}
                 addDatas={this.addDatas(item.type)}
                 addTab={this.addTab(index)}
                 delTab={this.delTab(index)}
-                onFocus={this.onFocus(index)}
+                //onFocus={this.onClick(index)}
+                onClick={this.onClick(index)}
                 onDrop={this.onDrop}
                 onDelete={this.onDelete(index)}
                 onPaste={item.props.allowdrop ? this.onPaste : this.onPasteTips}

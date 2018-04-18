@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { createPortal } from 'react-dom';
-import { Menu, Icon, message, Spin, Modal, Button } from 'antd';
+import { Menu, Icon, message, Spin, Modal, Button,Tooltip } from 'antd';
 import { INIT } from '../../util/action';
 
 const SubMenu = Menu.SubMenu;
@@ -26,18 +26,23 @@ class ActionBtn extends PureComponent {
     super();
     this.node = document.getElementById("header");
   }
-  savePage = () => {
+  savePage = (callback) => {
     const { layout, pageIndex } = this.props.store;
-    this.props.savePage(pageIndex[0], layout.toJS()[0]);
+    this.props.savePage(pageIndex[0], layout.toJS()[0],callback);
   }
   onView = () => {
     const {  pageIndex } = this.props.store;
-    const url = window.SERVER + `/mofun.html?page=${pageIndex[1]}/1`
-    window.open(url);
+    this.savePage(()=>{
+      const url = window.SERVER + `/mofun.html?page=${pageIndex[1]}/1`
+      window.open(url);
+    })
   }
   render() {
     return createPortal(
-      <div className="action-btn-group"><Button onClick={this.onView} icon="eye">预览</Button><Button icon="camera" onClick={this.savePage}>保存</Button></div>,
+      <div className="action-btn-group">
+        <Tooltip title="预览"><Button type="primary" shape="circle" onClick={this.onView} icon="eye-o"/></Tooltip>
+        <Tooltip title="保存"><Button type="primary" shape="circle" icon="save" onClick={this.savePage}/></Tooltip>
+      </div>,
       this.node
     )
   }
@@ -111,7 +116,7 @@ export default class ProjectList extends PureComponent {
       })
   }
 
-  savePage = (id, data) => {
+  savePage = (id, data, callback) => {
     fetch(window.SERVER + '/layout/' + id, {
       method: 'PUT',
       headers: {
@@ -129,6 +134,9 @@ export default class ProjectList extends PureComponent {
       .then((data) => {
         if (data.success) {
           message.success('保存布局成功~');
+          if(typeof callback === 'function'){
+            callback();
+          }
         } else {
           message.error('保存布局失败！' + data.statusText);
         }
@@ -170,7 +178,9 @@ export default class ProjectList extends PureComponent {
     for (let i = 0; i < Propject.length; i++) {
       Propject[i].pages = await this.fetchPage(Propject[i].id);
     }
+    const { initPage } = this.props.store;
     this.setState({ Propject });
+    initPage(Propject);
     const { pageIndex } = this.state;
     this.initPage(pageIndex[0])
   }

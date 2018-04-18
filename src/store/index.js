@@ -9,7 +9,10 @@ window.SERVER = "";
 const initialState = {
     layout: Immutable.fromJS([]),
     index: null,
-    pageIndex:['1', '1']
+    indexList:[],
+    pageIndex:['1', '1'],
+    historyId:null,
+    pageList:[]
 };
 
 const StoreContext = React.createContext({
@@ -20,22 +23,38 @@ export default class StoreProvider extends PureComponent {
     state = {
         ...initialState
     };
-    updata = (layout, index) => {
+    updata = (layout, index, bool=true) => {
+        if(layout === this.state.layout){
+            return false
+        }
         if (index) {
-            this.setState({ layout, index });
+            this.setState({ layout, index,indexList:[index] });
+            document.getElementById(index)&&document.getElementById(index).focus();
         } else {
             this.setState({ layout });
         }
+        if(bool){
+            this.setState({historyId:Date.now()});
+        }
     }
-    focus = (index) => {
-        this.setState({ index });
+    focus = (index,bool) => {
+        if(bool){
+            const focusindex = index[index.length-1];
+            this.setState({ indexList:index,index:focusindex });
+            focusindex&&document.getElementById(focusindex).focus();
+        }else{
+            this.setState({ index });
+        }
     }
     jumpPage = (pageIndex) => {
         this.setState({ pageIndex });
     }
+    initPage = (pageList) => {
+        this.setState({ pageList });
+    }
     render() {
-        const { layout, index, pageIndex } = this.state;
-        const current = index ? FOCUS(layout, index).toJS() : null;
+        const { layout, index, pageIndex,indexList,historyId,pageList } = this.state;
+        const current = index ? (FOCUS(layout, index)? FOCUS(layout, index).toJS() : null) : null;
         return (
             <StoreContext.Provider
                 value={{
@@ -43,9 +62,13 @@ export default class StoreProvider extends PureComponent {
                     updata: this.updata,
                     current: current,
                     index: index,
+                    indexList: indexList,
+                    historyId:historyId,
                     focus: this.focus,
                     pageIndex:pageIndex,
                     jumpPage: this.jumpPage,
+                    pageList:pageList,
+                    initPage: this.initPage,
                 }}
             >
                 {this.props.children}

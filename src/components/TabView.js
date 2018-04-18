@@ -57,7 +57,8 @@ export default class TabView extends PureComponent {
     delTab = (isLast) => (ev) => {
         ev.stopPropagation();
         const { tabIndex } = this.state;
-        this.props.delTab && this.props.delTab(tabIndex);
+        console.log(isLast)
+        this.props.delTab && this.props.delTab(tabIndex,isLast);
         if(isLast){
             this.setState({tabIndex:tabIndex-1})
         }
@@ -76,11 +77,11 @@ export default class TabView extends PureComponent {
         const {
             props: {
                 direction,
-            tabWidth,
-            tabHeight,
-            tabGap,
-            tabAlign,
-            dynamic
+                tabWidth,
+                tabHeight,
+                tabGap,
+                tabAlign,
+                dynamic
             },
         } = this.props;
         const style = { ...this.props.style, ...{ flexDirection: this.parseDir(direction) } }
@@ -97,12 +98,12 @@ export default class TabView extends PureComponent {
                         tabs.map((el, i) => {
                             if (el) {
                                 return (
-                                    <div onClick={this.setTabIndex(i)} key={i} data-index={i === tabIndex?i:''} className="view-tabs-item" style={{ width: tabWidth, height: tabHeight, margin: tabGap * .5 }}>
+                                    <div onMouseDown={this.setTabIndex(i)} key={i} data-index={i === tabIndex?i:''} className="view-tabs-item" style={{ width: tabWidth, height: tabHeight, margin: tabGap * .5 }}>
                                         {el}
                                         {
                                             !dynamic&&(<div className="tab-action" data-show={i === tabIndex}>
-                                                <a onClick={this.addTab} className="tab-add"><Icon type="plus-circle" /></a>
-                                                {tabs.length>1 && <a onClick={this.delTab(i===tabs.length-1)} className="tab-del"><Icon type="minus-circle" /></a>}
+                                                <a onClick={this.addTab} className="tab-add"><Icon type="plus" /></a>
+                                                {tabs.length>1 && <a onClick={this.delTab(i===tabs.length-1)} className="tab-del"><Icon type="minus" /></a>}
                                             </div>)
                                         }
                                     </div>

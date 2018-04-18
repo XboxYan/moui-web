@@ -2,10 +2,37 @@ import React, { PureComponent } from 'react';
 import { Layout, Icon, Breadcrumb, Button } from 'antd';
 import ProjectList from './ProjectList';
 import CompoList from './CompoList';
+import FullComList from './FullComList';
 import PropsList from './PropsList';
 import Center from './Center';
+import AppBar from './AppBar';
+import FullPropsPane from './FullPropsPane';
+import { editTheme } from '../../util/defaultProps';
 import StoreProvider, { StoreContext } from '../../store';
+import 'rc-color-picker/assets/index.css';
 const { Header, Footer, Sider, Content } = Layout;
+
+class EditTheme extends PureComponent {
+  state = {
+    index : 0
+  }
+  onSet = (index) => () => {
+    this.setState({index});
+    document.documentElement.style.setProperty('--theme-color', editTheme[index].color);
+    document.documentElement.style.setProperty('--theme-font-color',  editTheme[index].fontColor);
+  }
+  render() {
+    const { data } = this.props;
+    const { index } = this.state;
+    return (
+      <div className="edit-theme">
+        {
+          data.map((d,i)=><span onClick={this.onSet(i)} key={i} className="edit-theme-dot" data-current={i===index} style={{backgroundColor:d.fontColor,borderColor:d.color,color:d.color}} />)
+        }
+      </div>
+    )
+  }
+}
 
 class TreeNode extends PureComponent {
   paseTree = (path) => {
@@ -23,12 +50,12 @@ class TreeNode extends PureComponent {
   onFocus = (index) => () => {
     const { focus } = this.props.store;
     document.getElementById(index).focus();
-    focus(index);
+    focus([index], true);
   }
   render() {
     const { index } = this.props.store;
     if (!index) {
-      return null;
+      return '未选择组件';
     }
     const tree = this.paseTree(index);
     return (
@@ -45,6 +72,7 @@ export default class Index extends PureComponent {
 
   state = {
     isGrap: false,
+    isGraping: false,
     fullscreen: false
   }
 
@@ -92,6 +120,7 @@ export default class Index extends PureComponent {
       let _top = offsetParentBound.top + offsetParent.scrollTop;
       const _X = clientX - left;
       const _Y = clientY - top;
+      this.setState({ isGraping: true })
       document.onmousemove = (event) => this.drag(event, { _X, _Y, _left, _top });
       document.onmouseup = this.dragEnd;
       return false;
@@ -107,6 +136,7 @@ export default class Index extends PureComponent {
   }
 
   dragEnd = (ev) => {
+    this.setState({ isGraping: false })
     document.onmousemove = null;
     document.onmouseup = null;
   }
@@ -120,15 +150,21 @@ export default class Index extends PureComponent {
   }
 
   render() {
-    const { isGrap, fullscreen } = this.state;
+    const { isGrap, isGraping, fullscreen } = this.state;
     return (
       <StoreProvider>
         <Layout>
           <Header className="header" id="header">
-            <div className="logo"><Icon type="cloud" /> Coship</div>
+            <div className="logo"><Icon type="cloud-o" /> Coship</div>
+            <StoreContext.Consumer>
+              {
+                context => <AppBar store={context} />
+              }
+            </StoreContext.Consumer>
           </Header>
           <Layout>
             <Sider
+              className="sideLeft"
               width={220}
               collapsedWidth={0}
               collapsible={true}
@@ -144,6 +180,7 @@ export default class Index extends PureComponent {
               <Content id="screen" data-full={fullscreen}>
                 <div
                   data-grap={isGrap}
+                  data-isgraping={isGraping}
                   tabIndex={0}
                   id="layout-target"
                   onMouseDown={this.dragStart}
@@ -155,6 +192,13 @@ export default class Index extends PureComponent {
                   </StoreContext.Consumer>
                 </div>
                 <Button className="fullscrren-btn" type="primary" onClick={this.setFull} shape="circle" ><Icon type={fullscreen ? "shrink" : "arrows-alt"} /></Button>
+                <EditTheme data={editTheme} />
+                <FullComList show={fullscreen} />
+                <StoreContext.Consumer>
+                  {
+                    context => <FullPropsPane show={fullscreen} store={context} />
+                  }
+                </StoreContext.Consumer>
               </Content>
               <Footer>
                 <StoreContext.Consumer>

@@ -35,7 +35,7 @@ export default class Image extends PureComponent {
             })
             .then((res) => {
                 if (res.success) {
-                    const _src = window.SERVER + `/resource/${pageIndex[1]}/${pageIndex[0]}/img/` + res.result.saveName;
+                    const _src = res.result.savePath + '/img/' + res.result.saveName;
                     const _srcId = res.result.id;
                     if(!srcId){
                         const w = res.result.width;

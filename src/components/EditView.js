@@ -110,7 +110,7 @@ const ResizeW = (props) => {
     }
 
     return (
-        <span className="a-resize">
+        <span className="a-resize" onClick={(ev)=>ev.stopPropagation()}>
             <i className="a-l a-top" onMouseDown={(ev) => resizeStart(ev, 1)}></i>
             <i className="a-l a-right" onMouseDown={(ev) => resizeStart(ev, 2)}></i>
             <i className="a-l a-bottom" onMouseDown={(ev) => resizeStart(ev, 3)}></i>
@@ -461,13 +461,13 @@ class EditView extends PureComponent {
     }
 
     onClick = (ev) => {
-        //ev.stopPropagation();
+        ev.stopPropagation();
         const { left, top } = ev.target.getBoundingClientRect();
         this.mousePos = {
             x:ev.clientX - left,
             y:ev.clientY - top
         }
-        //this.props.onClick && this.props.onClick(this);
+        this.props.onClick && this.props.onClick(ev);
     }
 
     onDelete = (ev) => {
@@ -490,7 +490,7 @@ class EditView extends PureComponent {
 
     onFocus = (ev) => {
         ev.stopPropagation();
-        this.props.onFocus && this.props.onFocus();
+        this.props.onFocus && this.props.onFocus(ev);
     }
 
     onDoubleClick = (ev) => {
@@ -523,6 +523,7 @@ class EditView extends PureComponent {
 
     paseStyle = (style) => {
         let STYLE = {}
+        let boxShadow = (outlineWidth,outlineColor) => `0 0 0 ${outlineWidth}px ${outlineColor}`;
         for ( let name in style){
             switch (name) {
                 case 'x':
@@ -534,6 +535,12 @@ class EditView extends PureComponent {
                     break;
                 case 'h':
                     STYLE['height'] = style[name];
+                    break;
+                case 'outlineWidth':
+                    STYLE['boxShadow'] = boxShadow(style.outlineWidth,style.outlineColor);
+                    break;
+                case 'outlineColor':
+                    STYLE['boxShadow'] = boxShadow(style.outlineWidth,style.outlineColor);
                     break;
                 case 'backgroundImage':
                     STYLE['backgroundImage'] = style[name]==='unset'?'none':`url(${style[name]})`;
@@ -547,16 +554,14 @@ class EditView extends PureComponent {
         return STYLE;
     }
 
-    renderChild = () => {
-        return this.props.children;
-    }
-
     render() {
-        const { className, props:{allowdrop, disabled}, index,style,innerView } = this.props;
+        const { className, props:{allowdrop, disabled}, index,style,innerView,selected,focus={},select={} } = this.props;
         const { editable=true, w, h, x, y, _x, _y, isDrag, isHover, isNodrop, isOver } = this.state;
         const sizeW = parseInt(w, 10) >= 0 ? { width: w } : {};
         const sizeH = parseInt(h, 10) >= 0 ? { height: h } : {};
-        const _style = this.paseStyle(style);
+        const _focus = focus?(focus.onview&&focus.enable?focus:{}):{};
+        const _select = select?(select.onview&&select.enable?select:{}):{};
+        const _style = this.paseStyle({...style,..._select,..._focus});
         return (
             <div
                 onClick={this.onClick}
@@ -573,6 +578,7 @@ class EditView extends PureComponent {
                 data-pos-y={y}
                 data-res-w={w}
                 data-res-h={h}
+                data-selected={selected}
                 data-editable={editable}
                 data-allowdrop={allowdrop}
                 data-isdrag={isDrag}
@@ -585,11 +591,11 @@ class EditView extends PureComponent {
                 onMouseOut={this.mouseout}
                 onMouseDown={this.dragStart}
                 className={`view ${className}`}>
-                {!innerView&&<a className="view-del-btn" onMouseDown={(ev)=>ev.stopPropagation()} onClick={this.onDelete}><Icon type="close-circle" /></a>}
+                {!innerView&&<a className="view-del-btn" onMouseDown={(ev)=>ev.stopPropagation()} onClick={this.onDelete}><Icon type="close" /></a>}
                 {!disabled &&<span onClick={this.togglelock} className="editview" />}
                 {editable &&!disabled && <ResizeW res={{ x, y, w, h }} resize={this.resize} resizeEnd={this.resizeEnd} />}
                 <div className="ViewInner" style={{..._style,width:'100%',height:'100%'}}>
-                    {this.renderChild()}
+                    {this.props.children}
                 </div>
             </div>
         );

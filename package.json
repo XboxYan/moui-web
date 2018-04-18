@@ -25,5 +25,5 @@
     "react-app-rewire-less": "^2.1.0",
     "react-app-rewired": "^1.4.1"
   },
-  "homepage": "http://localhost:1000/main"
+  "homepage": "http://localhost:1000"
 }
